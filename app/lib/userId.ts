@@ -1,10 +1,18 @@
 /**
- * Utilities for managing anonymous user IDs
+ * Utilities for managing user information
  */
 
-// Generate a random ID for anonymous users
+// User information interface
+export interface UserInfo {
+  userId: string;
+  fullName?: string;
+  email?: string;
+  firstName?: string;
+}
+
+// Generate a random ID for users
 export function generateUserId(): string {
-  return Math.random().toString(36).substring(2, 15) + 
+  return Math.random().toString(36).substring(2, 15) +
          Math.random().toString(36).substring(2, 15);
 }
 
@@ -13,6 +21,20 @@ export function storeUserId(userId: string): void {
   if (typeof window !== 'undefined') {
     localStorage.setItem('redemptiveGiftsUserId', userId);
   }
+}
+
+// Store user information in local storage
+export function storeUserInfo(userInfo: UserInfo): void {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('redemptiveGiftsUserInfo', JSON.stringify(userInfo));
+    // Also store the userId separately for backward compatibility
+    localStorage.setItem('redemptiveGiftsUserId', userInfo.userId);
+  }
+}
+
+// Extract first name from full name
+export function extractFirstName(fullName: string): string {
+  return fullName.split(' ')[0] || fullName;
 }
 
 // Retrieve user ID from local storage or generate a new one
@@ -27,4 +49,19 @@ export function getUserId(): string {
     return newId;
   }
   return generateUserId(); // Fallback for SSR
-} 
+}
+
+// Retrieve user information from local storage
+export function getUserInfo(): UserInfo | null {
+  if (typeof window !== 'undefined') {
+    const storedInfo = localStorage.getItem('redemptiveGiftsUserInfo');
+    if (storedInfo) {
+      return JSON.parse(storedInfo) as UserInfo;
+    }
+
+    // If we only have the userId (backward compatibility)
+    const userId = getUserId();
+    return { userId };
+  }
+  return null; // Fallback for SSR
+}

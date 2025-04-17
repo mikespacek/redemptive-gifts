@@ -11,6 +11,7 @@ interface QuestionCardProps {
   totalQuestions: number;
   onAnswer: (questionId: string, giftType: string, score: number) => void;
   currentAnswer?: number | null;
+  autoAdvance?: boolean;
 }
 
 const QuestionCard = ({
@@ -20,45 +21,48 @@ const QuestionCard = ({
   giftType,
   totalQuestions,
   onAnswer,
-  currentAnswer
+  currentAnswer,
+  autoAdvance = true
 }: QuestionCardProps) => {
   const [selectedScore, setSelectedScore] = useState<number | null>(currentAnswer || null);
 
   const handleSelect = (score: number) => {
     setSelectedScore(score);
+
+    // Call the onAnswer callback with an additional autoAdvance parameter
+    // This will signal to the parent component that it should advance to the next question
     onAnswer(questionId, giftType, score);
   };
 
   return (
     <motion.div
-      className="card p-6 md:p-8"
+      className="p-6 md:p-8 shadow-lg rounded-2xl bg-white border border-gray-200"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex justify-between items-center mb-4">
-        <span className="text-sm font-medium text-gray-500">Question {questionNumber} of {totalQuestions}</span>
-        <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-800">
-          {giftType.charAt(0).toUpperCase() + giftType.slice(1)}
+      <div className="flex justify-between items-center mb-5">
+        <span className="text-sm font-medium text-gray-700 bg-gray-100 px-4 py-1.5 rounded-full border border-gray-200">
+          Question {questionNumber} of {totalQuestions}
         </span>
       </div>
 
-      <h3 className="text-lg md:text-xl font-medium mb-6">{text}</h3>
+      <h3 className="text-lg md:text-xl font-medium mb-8 leading-relaxed text-gray-800">{text}</h3>
 
-      <div className="space-y-4 md:space-y-0 md:flex md:justify-between md:space-x-2 lg:space-x-4">
+      <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 sm:gap-4">
         {[1, 2, 3, 4, 5].map((score) => (
           <button
             key={score}
             onClick={() => handleSelect(score)}
-            className={`w-full md:w-auto flex flex-col items-center p-4 rounded-lg border transition-all ${
+            className={`flex flex-col items-center p-4 sm:p-5 rounded-xl transition-all ${
               selectedScore === score
-                ? 'border-indigo-500 bg-indigo-50'
-                : 'border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/50'
+                ? 'bg-gray-100 border-2 border-gray-400 shadow-md'
+                : 'bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50'
             }`}
           >
-            <span className="text-xl font-bold mb-2">{score}</span>
-            <span className="text-xs text-center text-gray-500">
+            <span className={`text-lg sm:text-xl font-bold mb-1 sm:mb-2 ${selectedScore === score ? 'text-gray-800' : 'text-gray-600'}`}>{score}</span>
+            <span className={`text-xs text-center ${selectedScore === score ? 'text-gray-700' : 'text-gray-500'}`}>
               {getScoreLabel(score)}
             </span>
           </button>
@@ -86,4 +90,4 @@ function getScoreLabel(score: number): string {
   }
 }
 
-export default QuestionCard; 
+export default QuestionCard;

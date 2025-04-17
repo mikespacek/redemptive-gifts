@@ -2,19 +2,26 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Header = () => {
   const pathname = usePathname();
-  
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
   return (
-    <header className="bg-white shadow-sm">
-      <div className="container-custom">
-        <div className="flex justify-between items-center py-4">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-indigo-600">Redemptive Gifts Test</span>
+    <header className="bg-black shadow-custom sticky top-0 z-10 backdrop-blur-sm bg-black/90 border-b border-gray-800">
+      <div className="container mx-auto px-6 sm:px-10 lg:px-16 py-4 max-w-6xl">
+        <div className="flex justify-between items-center">
+          <Link href="/" className="flex items-center space-x-2 group">
+            <span className="text-xl sm:text-2xl font-bold text-white group-hover:text-gray-300 transition-all duration-300">Redemptive Gifts Test</span>
           </Link>
-          
-          <nav className="hidden md:flex space-x-8">
+
+          <nav className="hidden md:flex space-x-10">
             <NavLink href="/" active={pathname === '/'}>
               Home
             </NavLink>
@@ -25,16 +32,55 @@ const Header = () => {
               About
             </NavLink>
           </nav>
-          
+
           {/* Mobile Menu Button */}
           <div className="md:hidden">
-            <button className="p-2 rounded-md hover:bg-gray-100">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            <button
+              className="p-2 rounded-full hover:bg-gray-800 transition-colors"
+              onClick={toggleMobileMenu}
+              aria-label="Toggle menu"
+            >
+              <svg
+                className="w-6 h-6 text-gray-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
               </svg>
             </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              className="md:hidden py-5 mt-4 border-t border-gray-800"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="flex flex-col space-y-4">
+                <MobileNavLink href="/" active={pathname === '/'} onClick={() => setMobileMenuOpen(false)}>
+                  Home
+                </MobileNavLink>
+                <MobileNavLink href="/test" active={pathname === '/test'} onClick={() => setMobileMenuOpen(false)}>
+                  Take Test
+                </MobileNavLink>
+                <MobileNavLink href="/about" active={pathname === '/about'} onClick={() => setMobileMenuOpen(false)}>
+                  About
+                </MobileNavLink>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </header>
   );
@@ -48,10 +94,31 @@ interface NavLinkProps {
 
 const NavLink = ({ href, active, children }: NavLinkProps) => {
   return (
-    <Link 
+    <Link
       href={href}
-      className={`px-1 py-2 text-gray-700 hover:text-indigo-600 transition-colors border-b-2 ${
-        active ? 'border-indigo-600 text-indigo-600' : 'border-transparent'
+      className={`px-1 py-2 text-gray-400 hover:text-white transition-all relative group ${
+        active ? 'text-white font-medium' : ''
+      }`}
+    >
+      {children}
+      <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gray-500 transform origin-left transition-transform duration-300 ${active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></span>
+    </Link>
+  );
+};
+
+interface MobileNavLinkProps extends NavLinkProps {
+  onClick: () => void;
+}
+
+const MobileNavLink = ({ href, active, children, onClick }: MobileNavLinkProps) => {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className={`px-5 py-3 rounded-xl transition-all ${
+        active
+          ? 'bg-gray-800 text-white font-medium border border-gray-700'
+          : 'text-gray-400 hover:bg-gray-900 hover:text-white'
       }`}
     >
       {children}
@@ -59,4 +126,4 @@ const NavLink = ({ href, active, children }: NavLinkProps) => {
   );
 };
 
-export default Header; 
+export default Header;

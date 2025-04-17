@@ -1,6 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { Id } from "./_generated/dataModel";
+import { api } from "./_generated/api";
 
 // Define types for better type safety
 type Answer = {
@@ -46,18 +47,18 @@ export const saveAnswer = mutation({
   },
   handler: async (ctx, args) => {
     const { submissionId, questionId, giftType, score } = args;
-    
+
     // Get current submission
     const submission = await ctx.db.get(submissionId);
     if (!submission) {
       throw new Error("Submission not found");
     }
-    
+
     // Check if answer already exists for this question
     const answerIndex = submission.answers.findIndex(
       (a: Answer) => a.questionId === questionId
     );
-    
+
     let updatedAnswers;
     if (answerIndex >= 0) {
       // Update existing answer
@@ -67,11 +68,11 @@ export const saveAnswer = mutation({
       // Add new answer
       updatedAnswers = [...submission.answers, { questionId, giftType, score }];
     }
-    
+
     await ctx.db.patch(submissionId, {
       answers: updatedAnswers,
     });
-    
+
     return submissionId;
   },
 });
@@ -80,16 +81,22 @@ export const saveAnswer = mutation({
 export const completeSubmission = mutation({
   args: {
     submissionId: v.id("submissions"),
+    userInfo: v.optional(v.object({
+      userId: v.string(),
+      fullName: v.optional(v.string()),
+      email: v.optional(v.string()),
+      firstName: v.optional(v.string())
+    }))
   },
   handler: async (ctx, args) => {
-    const { submissionId } = args;
-    
+    const { submissionId, userInfo } = args;
+
     // Get the submission
     const submission = await ctx.db.get(submissionId);
     if (!submission) {
       throw new Error("Submission not found");
     }
-    
+
     // Calculate scores for each gift type
     const scores: Scores = {
       prophet: 0,
@@ -100,7 +107,7 @@ export const completeSubmission = mutation({
       ruler: 0,
       mercy: 0,
     };
-    
+
     // Count questions for each gift type to calculate averages
     const counts: Scores = {
       prophet: 0,
@@ -111,27 +118,27 @@ export const completeSubmission = mutation({
       ruler: 0,
       mercy: 0,
     };
-    
+
     // Calculate totals
     submission.answers.forEach((answer: Answer) => {
       const giftType = answer.giftType as keyof Scores;
       scores[giftType] += answer.score;
       counts[giftType]++;
     });
-    
+
     // Calculate averages
     Object.keys(scores).forEach((gift) => {
       const giftKey = gift as keyof Scores;
       const count = counts[giftKey];
       scores[giftKey] = count > 0 ? Math.round((scores[giftKey] / count) * 100) / 100 : 0;
     });
-    
+
     // Find dominant and secondary gifts
     let dominantGift = "";
     let dominantScore = -1;
     let secondaryGift = "";
     let secondaryScore = -1;
-    
+
     Object.entries(scores).forEach(([gift, score]) => {
       if (score > dominantScore) {
         secondaryGift = dominantGift;
@@ -143,12 +150,12 @@ export const completeSubmission = mutation({
         secondaryScore = score;
       }
     });
-    
+
     // Mark submission as completed
     await ctx.db.patch(submissionId, {
       completed: true,
     });
-    
+
     // Store results
     const resultId = await ctx.db.insert("results", {
       submissionId: submissionId.toString(),
@@ -157,8 +164,23 @@ export const completeSubmission = mutation({
       dominantGift,
       secondaryGift,
       timestamp: Date.now(),
+      fullName: userInfo?.fullName,
+      email: userInfo?.email,
+      firstName: userInfo?.firstName,
     });
-    
+
+    // Send email notification to admin
+    try {
+      // Schedule the email sending as a background task
+      await ctx.scheduler.runAfter(0, api.email.sendResultsEmail, {
+        resultId,
+        adminEmail: "mike@unionhouston.com" // This is where you'll receive the test results
+      });
+    } catch (error) {
+      console.error("Error scheduling email:", error);
+      // Continue even if email scheduling fails
+    }
+
     return { resultId, scores, dominantGift, secondaryGift };
   },
 });
@@ -186,4 +208,4 @@ export const getByUser = query({
       .filter((q) => q.eq(q.field("userId"), userId))
       .collect();
   },
-}); 
+});

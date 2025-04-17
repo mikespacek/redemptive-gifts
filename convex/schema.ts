@@ -39,6 +39,9 @@ export default defineSchema({
     dominantGift: v.string(),
     secondaryGift: v.string(),
     timestamp: v.number(),
+    fullName: v.optional(v.string()),
+    email: v.optional(v.string()),
+    firstName: v.optional(v.string()),
   }),
 
   // Admin credentials table
@@ -46,4 +49,4 @@ export default defineSchema({
     username: v.string(),
     passwordHash: v.string(), // Hashed password for security
   }),
-}); 
+});

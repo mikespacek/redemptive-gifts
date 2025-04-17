@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
@@ -16,11 +16,11 @@ import { GiftType } from '../lib/gift-descriptions';
 function ResultsLoader() {
   return (
     <PageLayout>
-      <div className="container-custom py-12">
+      <div className="container mx-auto px-6 sm:px-10 lg:px-16 py-12 max-w-6xl">
         <div className="text-center">
-          <h1>Loading Results...</h1>
+          <h1 className="text-black">Loading Results...</h1>
           <div className="mt-8 flex justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-500"></div>
           </div>
         </div>
       </div>
@@ -28,9 +28,27 @@ function ResultsLoader() {
   );
 }
 
-// Main results component that uses the search params
+// Component for displaying "No Results Found" message
+function NoResultsFound() {
+  return (
+    <PageLayout>
+      <div className="container mx-auto px-6 sm:px-10 lg:px-16 py-12 max-w-6xl">
+        <div className="text-center">
+          <h1 className="text-black">No Results Found</h1>
+          <p className="mt-4">
+            We couldn't find any test results. Please take the test first.
+          </p>
+          <Link href="/test" className="btn-secondary mt-8 inline-block">
+            Take the Test
+          </Link>
+        </div>
+      </div>
+    </PageLayout>
+  );
+}
+
+// Main results component
 function ResultsContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const resultId = searchParams?.get('resultId');
   const [userId, setUserId] = useState<string>('');
@@ -40,36 +58,28 @@ function ResultsContent() {
     setUserId(id);
   }, []);
 
-  // Get the result by ID if available
-  const resultById = resultId 
-    ? useQuery(api.results.getById, { resultId })
-    : null;
+  // Always call hooks in the same order
+  const resultByIdQuery = useQuery(api.results.getById, { resultId: resultId || "" });
+  const resultByUserQuery = useQuery(api.results.getMostRecentByUser, { userId: userId || "" });
 
-  // Otherwise get the most recent result for the user
-  const mostRecentResult = !resultId && userId
-    ? useQuery(api.results.getMostRecentByUser, { userId })
-    : null;
+  // Then conditionally use the results
+  const resultById = resultId ? resultByIdQuery : null;
+  const resultByUser = !resultId && userId ? resultByUserQuery : null;
 
-  // Use resultById if available, otherwise use mostRecentResult
-  const result = resultById || mostRecentResult;
+  // Use the appropriate result
+  const result = resultById || resultByUser;
 
-  // If no result is found, show a message
+  // Show loading state if we're still fetching
   if (!result) {
-    return (
-      <PageLayout>
-        <div className="container-custom py-12">
-          <div className="text-center">
-            <h1>No Results Found</h1>
-            <p className="mt-4">
-              We couldn't find any test results. Please take the test first.
-            </p>
-            <Link href="/test" className="btn-primary mt-8 inline-block">
-              Take the Test
-            </Link>
-          </div>
-        </div>
-      </PageLayout>
-    );
+    // If we have a userId but no result, try to fetch results again after a short delay
+    if (userId && !resultId) {
+      // This helps with race conditions where the result might not be immediately available
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+      return <ResultsLoader />;
+    }
+    return <NoResultsFound />;
   }
 
   // Extract data from the result
@@ -77,7 +87,7 @@ function ResultsContent() {
 
   return (
     <PageLayout>
-      <div className="container-custom py-12">
+      <div className="container mx-auto px-6 sm:px-10 lg:px-16 py-12 max-w-6xl">
         <motion.div
           className="max-w-4xl mx-auto"
           initial={{ opacity: 0 }}
@@ -85,10 +95,13 @@ function ResultsContent() {
           transition={{ duration: 0.5 }}
         >
           <div className="text-center mb-12">
-            <h1>Your Redemptive Gifts Results</h1>
-            <p className="text-xl text-gray-600 mt-4">
+            <h1 className="text-black">
+              {result.firstName ? `${result.firstName}'s` : 'Your'} Redemptive Gifts Results
+            </h1>
+            <p className="text-xl text-gray-400 mt-4">
               Based on your responses, we've identified your primary and secondary gifts.
             </p>
+
           </div>
 
           <div className="mb-12">
@@ -100,19 +113,10 @@ function ResultsContent() {
             <GiftSummary giftType={secondaryGift as GiftType} isPrimary={false} />
           </div>
 
-          <div className="mt-12 flex flex-col sm:flex-row justify-center gap-4">
+          <div className="mt-12 flex justify-center">
             <Link href="/test" className="btn-secondary">
               Retake Test
             </Link>
-            <button 
-              onClick={() => {
-                // Share URL functionality - would use navigator.share in a real app
-                alert('Sharing your results link: ' + window.location.href);
-              }}
-              className="btn-primary"
-            >
-              Share Results
-            </button>
           </div>
         </motion.div>
       </div>
@@ -127,4 +131,4 @@ export default function ResultsPage() {
       <ResultsContent />
     </Suspense>
   );
-} 
+}
