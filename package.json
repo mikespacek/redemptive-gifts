@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "npm install && next build"
+    "vercel-build": "npm install && next build",
+    "deploy": "node deploy.js"
   },
   "dependencies": {
     "chart.js": "^4.4.9",
