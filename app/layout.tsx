@@ -3,6 +3,13 @@ import { Inter } from "next/font/google";
 import "./test-globals.css";
 import { Providers } from "./providers";
 import ClientErrorHandler from "./components/ClientErrorHandler";
+import dynamic from 'next/dynamic';
+
+// Dynamically import the connection test component with no SSR
+const ConvexConnectionTest = dynamic(
+  () => import('./components/ConvexConnectionTest'),
+  { ssr: false }
+);
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,6 +29,7 @@ export default function RootLayout({
         <Providers>
           <ClientErrorHandler />
           {children}
+          {process.env.NODE_ENV !== 'production' && <ConvexConnectionTest />}
         </Providers>
       </body>
     </html>
