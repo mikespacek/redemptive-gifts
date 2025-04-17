@@ -31,7 +31,21 @@ export default function TestPage() {
   const [showUserForm, setShowUserForm] = useState(true);
 
   // Get all questions from the database
-  const questions = useQuery(asQuery<Question[]>(api.questions.getAll)) || [];
+  const questions = useQuery(asQuery<Question[]>(api.questions.getAll));
+  const [questionsError, setQuestionsError] = useState<string | null>(null);
+
+  // Check if questions loaded successfully
+  useEffect(() => {
+    if (questions === undefined && !isLoading) {
+      console.error("Failed to load questions");
+      setQuestionsError("Failed to load questions. Please check your connection and try again.");
+    } else if (Array.isArray(questions) && questions.length === 0) {
+      console.error("No questions found in the database");
+      setQuestionsError("No questions found. Please contact support.");
+    } else if (questions !== undefined) {
+      setQuestionsError(null);
+    }
+  }, [questions, isLoading]);
 
   // Mutations for saving answers
   const startSubmission = useMutation(asMutation(api.submissions.startSubmission));
@@ -176,11 +190,12 @@ export default function TestPage() {
   };
 
   // Calculate progress
-  const currentQuestion = questions[currentQuestionIndex] as Question | undefined;
-  const totalQuestions = questions.length;
-  const progress = Math.round((Object.keys(answers).length / totalQuestions) * 100);
+  const questionsArray = questions || [];
+  const currentQuestion = questionsArray[currentQuestionIndex] as Question | undefined;
+  const totalQuestions = questionsArray.length;
+  const progress = totalQuestions > 0 ? Math.round((Object.keys(answers).length / totalQuestions) * 100) : 0;
   const isCurrentQuestionAnswered = currentQuestion && answers[currentQuestion._id]?.score > 0;
-  const canComplete = progress === 100;
+  const canComplete = progress === 100 && totalQuestions > 0;
 
   if (isLoading) {
     return (
@@ -214,6 +229,31 @@ export default function TestPage() {
               </div>
             </div>
             <p className="mt-10 text-gray-400 font-medium">Loading your test questions...</p>
+          </div>
+        </div>
+      </PageLayout>
+    );
+  }
+
+  // Display error message if questions failed to load
+  if (questionsError) {
+    return (
+      <PageLayout>
+        <div className="container mx-auto px-6 sm:px-10 lg:px-16 py-12 max-w-6xl">
+          <div className="max-w-md mx-auto text-center">
+            <div className="bg-white rounded-lg shadow-lg p-8 border border-red-100">
+              <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Questions</h2>
+              <p className="text-gray-700 mb-6">{questionsError}</p>
+              <p className="text-gray-600 text-sm mb-6">
+                This could be due to a connection issue or a problem with the database.
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="w-full bg-black text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors"
+              >
+                Retry
+              </button>
+            </div>
           </div>
         </div>
       </PageLayout>
