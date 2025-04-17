@@ -1,4 +1,4 @@
-// Enhanced deployment script for Vercel
+// Enhanced deployment script for Netlify
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -33,13 +33,13 @@ try {
   console.log('Building the application...');
   run('npm run build');
 
-  // Install Vercel CLI
-  console.log('Installing Vercel CLI...');
-  run('npm install -g vercel@latest');
+  // Install Netlify CLI
+  console.log('Installing Netlify CLI...');
+  run('npm install -g netlify-cli@latest');
 
-  // Deploy to Vercel with specific settings
-  console.log('Deploying to Vercel...');
-  run('vercel --prod --yes');
+  // Deploy to Netlify with specific settings
+  console.log('Deploying to Netlify...');
+  run('netlify deploy --prod');
 
   console.log('Deployment completed successfully!');
 } catch (error) {

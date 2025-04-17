@@ -12,13 +12,13 @@ const nextConfig = {
     // Ignore TypeScript errors during production build
     ignoreBuildErrors: true,
   },
-  // Use the default output mode for Vercel compatibility
-  // output: 'standalone',
+  // Output configuration
+  output: 'standalone',
   // Handle environment variable for the Convex URL
   env: {
     NEXT_PUBLIC_CONVEX_URL: process.env.NEXT_PUBLIC_CONVEX_URL || 'https://example.convex.cloud',
   },
-  // Simplified experimental options for Vercel compatibility
+  // Experimental options
   experimental: {
     // Ensure all pages are server components by default
     appDocumentPreloading: false
