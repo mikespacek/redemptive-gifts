@@ -1,16 +1,45 @@
-// Simple deployment script for Vercel
+// Enhanced deployment script for Vercel
 const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
-console.log('Starting deployment process...');
+console.log('Starting enhanced deployment process...');
+
+// Function to run a command and return its output
+function run(command) {
+  console.log(`Running: ${command}`);
+  return execSync(command, { stdio: 'inherit' });
+}
 
 try {
-  // Install Vercel CLI if not already installed
-  console.log('Ensuring Vercel CLI is installed...');
-  execSync('npm install -g vercel@latest', { stdio: 'inherit' });
+  // Ensure we have the latest code
+  console.log('Pulling latest changes...');
+  run('git pull origin main');
 
-  // Deploy to Vercel
+  // Clean up any previous build artifacts
+  console.log('Cleaning up...');
+  if (fs.existsSync('.next')) {
+    fs.rmSync('.next', { recursive: true, force: true });
+  }
+  if (fs.existsSync('node_modules')) {
+    fs.rmSync('node_modules', { recursive: true, force: true });
+  }
+
+  // Install dependencies
+  console.log('Installing dependencies...');
+  run('npm install');
+
+  // Build the application
+  console.log('Building the application...');
+  run('npm run build');
+
+  // Install Vercel CLI
+  console.log('Installing Vercel CLI...');
+  run('npm install -g vercel@latest');
+
+  // Deploy to Vercel with specific settings
   console.log('Deploying to Vercel...');
-  execSync('vercel --prod', { stdio: 'inherit' });
+  run('vercel --prod --yes');
 
   console.log('Deployment completed successfully!');
 } catch (error) {
