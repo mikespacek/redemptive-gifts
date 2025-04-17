@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useQuery } from 'convex/react';
@@ -12,10 +12,27 @@ import Link from 'next/link';
 import { getUserId } from '../lib/userId';
 import { GiftType } from '../lib/gift-descriptions';
 
-export default function ResultsPage() {
+// Loading component for Suspense fallback
+function ResultsLoader() {
+  return (
+    <PageLayout>
+      <div className="container-custom py-12">
+        <div className="text-center">
+          <h1>Loading Results...</h1>
+          <div className="mt-8 flex justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+          </div>
+        </div>
+      </div>
+    </PageLayout>
+  );
+}
+
+// Main results component that uses the search params
+function ResultsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const resultId = searchParams.get('resultId');
+  const resultId = searchParams?.get('resultId');
   const [userId, setUserId] = useState<string>('');
 
   useEffect(() => {
@@ -100,5 +117,14 @@ export default function ResultsPage() {
         </motion.div>
       </div>
     </PageLayout>
+  );
+}
+
+// Wrap the results page with Suspense
+export default function ResultsPage() {
+  return (
+    <Suspense fallback={<ResultsLoader />}>
+      <ResultsContent />
+    </Suspense>
   );
 } 

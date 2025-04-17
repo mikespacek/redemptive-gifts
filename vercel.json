@@ -1,0 +1,19 @@
+{
+  "buildCommand": "next build",
+  "ignoreCommand": "next lint",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "regions": ["iad1"],
+  "builds": [
+    {
+      "src": "next.config.mjs",
+      "use": "@vercel/next"
+    }
+  ],
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_CONVEX_URL": "https://example.convex.cloud"
+    }
+  }
+} 

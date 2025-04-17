@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import PageLayout from '../components/PageLayout';
@@ -19,7 +19,8 @@ interface Result {
   scores: Record<GiftType, number>;
 }
 
-export default function AdminPage() {
+// Admin content component with client-side logic
+function AdminContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -254,5 +255,30 @@ export default function AdminPage() {
         </div>
       </div>
     </PageLayout>
+  );
+}
+
+// Loading component for suspense fallback
+function AdminLoader() {
+  return (
+    <PageLayout>
+      <div className="container-custom py-12">
+        <div className="text-center">
+          <h1>Loading Admin Dashboard...</h1>
+          <div className="mt-8 flex justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+          </div>
+        </div>
+      </div>
+    </PageLayout>
+  );
+}
+
+// Export the admin page with suspense
+export default function AdminPage() {
+  return (
+    <Suspense fallback={<AdminLoader />}>
+      <AdminContent />
+    </Suspense>
   );
 } 

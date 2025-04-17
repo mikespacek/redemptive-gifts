@@ -18,6 +18,13 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_CONVEX_URL: process.env.NEXT_PUBLIC_CONVEX_URL || 'https://example.convex.cloud',
   },
+  // Disable static page generation
+  experimental: {
+    // Ensure all pages are server components by default
+    appDocumentPreloading: false,
+    // Disable static generation
+    craCompat: false,
+  },
 };
 
 export default nextConfig;
