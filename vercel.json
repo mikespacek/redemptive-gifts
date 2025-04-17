@@ -1,6 +1,6 @@
 {
   "buildCommand": "npm run build",
-  "ignoreCommand": "echo 'Skipping lint checks'",
+  "ignoreCommand": "exit 0",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "installCommand": "npm install",
@@ -16,4 +16,4 @@
       "NEXT_PUBLIC_CONVEX_URL": "https://example.convex.cloud"
     }
   }
-} 
+}
