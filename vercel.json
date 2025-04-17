@@ -1,19 +1,14 @@
 {
-  "buildCommand": "./build.sh",
-  "ignoreCommand": "exit 0",
+  "version": 2,
+  "buildCommand": false,
+  "devCommand": false,
+  "installCommand": false,
+  "framework": null,
   "outputDirectory": ".next",
-  "framework": "nextjs",
-  "installCommand": "npm install",
-  "regions": ["iad1"],
   "builds": [
     {
-      "src": "next.config.mjs",
+      "src": "package.json",
       "use": "@vercel/next"
     }
-  ],
-  "build": {
-    "env": {
-      "NEXT_PUBLIC_CONVEX_URL": "https://example.convex.cloud"
-    }
-  }
+  ]
 }
