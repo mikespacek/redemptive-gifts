@@ -1,0 +1,27 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NEXT_PUBLIC_CONVEX_URL = "https://jmcepmahvxhizfkxhfrb.convex.cloud"
+  NODE_VERSION = "18"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Custom 404 page
+[[redirects]]
+  from = "/*"
+  to = "/netlify-error.html"
+  status = 404
+
+# Custom error page for client-side errors
+[[redirects]]
+  from = "/error"
+  to = "/netlify-error.html"
+  status = 200
