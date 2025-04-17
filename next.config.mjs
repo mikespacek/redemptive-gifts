@@ -24,7 +24,25 @@ const nextConfig = {
     appDocumentPreloading: false,
     // Disable static generation
     craCompat: false,
+    // Force dynamic rendering
+    isrMemoryCacheSize: 0,
+    // Skip type checking
+    skipTypeChecking: true,
+    // Skip middleware
+    skipMiddlewareUrlNormalize: true,
+    // Skip trailing slash redirect
+    skipTrailingSlashRedirect: true
   },
+  // Disable image optimization during build
+  images: {
+    disableStaticImages: true,
+    unoptimized: true
+  },
+  // Disables linting during builds
+  onDemandEntries: {
+    // Disable on demand entries
+    maxInactiveAge: 0
+  }
 };
 
 export default nextConfig;

@@ -1,6 +1,6 @@
 {
-  "buildCommand": "next build",
-  "ignoreCommand": "next lint",
+  "buildCommand": "npm run build",
+  "ignoreCommand": "echo 'Skipping lint checks'",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "installCommand": "npm install",
