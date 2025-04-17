@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-800;
+  }
+
+  h1 {
+    @apply text-3xl font-bold tracking-tight sm:text-4xl mb-6;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold tracking-tight sm:text-3xl mb-4;
+  }
+
+  h3 {
+    @apply text-xl font-semibold tracking-tight sm:text-2xl mb-3;
+  }
+
+  p {
+    @apply mb-4 text-gray-700;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-6xl;
+  }
+
+  .btn-primary {
+    @apply bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md shadow-sm transition duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded-md border border-gray-300 shadow-sm transition duration-200;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-md p-6 mb-4 border border-gray-200;
+  }
+
+  .form-input {
+    @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500;
+  }
+
+  .gift-prophet {
+    @apply bg-red-500 text-white;
+  }
+
+  .gift-servant {
+    @apply bg-blue-500 text-white;
+  }
+
+  .gift-teacher {
+    @apply bg-green-500 text-white;
+  }
+
+  .gift-exhorter {
+    @apply bg-yellow-500 text-gray-800;
+  }
+
+  .gift-giver {
+    @apply bg-purple-500 text-white;
+  }
+
+  .gift-ruler {
+    @apply bg-orange-500 text-white;
+  }
+
+  .gift-mercy {
+    @apply bg-pink-500 text-white;
+  }
+}
