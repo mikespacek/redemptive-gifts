@@ -1,4 +1,5 @@
-import { mutation } from "./_generated/server";
+import { mutation, action } from "./_generated/server";
+import { api } from "./_generated/api";
 
 // Sample questions for each gift type
 const sampleQuestions = [
@@ -13,7 +14,7 @@ const sampleQuestions = [
   { text: "I am passionate about justice and righteousness.", giftType: "prophet", order: 50 },
   { text: "I care deeply about the moral state of society.", giftType: "prophet", order: 57 },
   { text: "I have a strong sense of right and wrong.", giftType: "prophet", order: 64 },
-  
+
   // Servant questions
   { text: "I notice practical needs before others do.", giftType: "servant", order: 2 },
   { text: "I enjoy working behind the scenes to support others.", giftType: "servant", order: 9 },
@@ -25,7 +26,7 @@ const sampleQuestions = [
   { text: "I easily anticipate what others might need.", giftType: "servant", order: 51 },
   { text: "I feel uncomfortable being served by others.", giftType: "servant", order: 58 },
   { text: "I often take care of details that others overlook.", giftType: "servant", order: 65 },
-  
+
   // Teacher questions
   { text: "I enjoy studying and researching topics thoroughly.", giftType: "teacher", order: 3 },
   { text: "I present information in a systematic, logical way.", giftType: "teacher", order: 10 },
@@ -37,7 +38,7 @@ const sampleQuestions = [
   { text: "I naturally organize information into systems or frameworks.", giftType: "teacher", order: 52 },
   { text: "I value history and foundations when learning new concepts.", giftType: "teacher", order: 59 },
   { text: "I prefer detailed explanations to simplified summaries.", giftType: "teacher", order: 66 },
-  
+
   // Exhorter questions
   { text: "I enjoy encouraging others to reach their potential.", giftType: "exhorter", order: 4 },
   { text: "I naturally see the positive in difficult situations.", giftType: "exhorter", order: 11 },
@@ -49,7 +50,7 @@ const sampleQuestions = [
   { text: "I easily switch conversations from superficial to meaningful topics.", giftType: "exhorter", order: 53 },
   { text: "I naturally see people's potential and growth opportunities.", giftType: "exhorter", order: 60 },
   { text: "I enjoy helping others apply truth to their specific situations.", giftType: "exhorter", order: 67 },
-  
+
   // Giver questions
   { text: "I am good at recognizing the value in things or opportunities.", giftType: "giver", order: 5 },
   { text: "I enjoy using my resources to meet others' needs.", giftType: "giver", order: 12 },
@@ -61,7 +62,7 @@ const sampleQuestions = [
   { text: "I prefer to give anonymously rather than publicly.", giftType: "giver", order: 54 },
   { text: "I am more likely to give generously to effective initiatives.", giftType: "giver", order: 61 },
   { text: "I enjoy making wise financial decisions and investments.", giftType: "giver", order: 68 },
-  
+
   // Ruler questions
   { text: "I naturally take charge in group settings.", giftType: "ruler", order: 6 },
   { text: "I enjoy organizing people and resources toward a vision.", giftType: "ruler", order: 13 },
@@ -73,7 +74,7 @@ const sampleQuestions = [
   { text: "I naturally see the big picture in situations.", giftType: "ruler", order: 55 },
   { text: "I hold myself and others to high standards.", giftType: "ruler", order: 62 },
   { text: "I quickly identify how to improve existing systems or processes.", giftType: "ruler", order: 69 },
-  
+
   // Mercy questions
   { text: "I easily sense other people's emotions and feelings.", giftType: "mercy", order: 7 },
   { text: "I am drawn to people who are suffering or in pain.", giftType: "mercy", order: 14 },
@@ -87,7 +88,7 @@ const sampleQuestions = [
   { text: "I naturally adapt to others' emotional needs.", giftType: "mercy", order: 70 },
 ];
 
-// Seed the database with questions
+// Seed the database with questions (mutation version)
 export const seedQuestions = mutation({
   handler: async (ctx) => {
     // Check if questions already exist
@@ -95,20 +96,55 @@ export const seedQuestions = mutation({
     if (existingQuestions.length > 0) {
       return { success: false, message: "Questions already exist in the database." };
     }
-    
+
     // Insert all sample questions
     for (const question of sampleQuestions) {
       await ctx.db.insert("questions", question);
     }
-    
-    return { 
-      success: true, 
+
+    return {
+      success: true,
       message: `Successfully added ${sampleQuestions.length} questions to the database.`
     };
   },
 });
 
 // Seed an admin user
+// Action version of seed questions (can be called from client)
+export const seedQuestionsAction = action({
+  handler: async (ctx) => {
+    // Check if questions already exist
+    const existingQuestions = await ctx.runQuery(api.questions.getAll);
+
+    if (existingQuestions && existingQuestions.length > 0) {
+      console.log(`Database already has ${existingQuestions.length} questions. Skipping seed.`);
+      return {
+        success: true,
+        message: `Database already has ${existingQuestions.length} questions. No new questions added.`,
+        questionsCount: existingQuestions.length
+      };
+    }
+
+    // Add all sample questions
+    let addedCount = 0;
+    for (const question of sampleQuestions) {
+      await ctx.runMutation(api.questions.add, {
+        text: question.text,
+        giftType: question.giftType,
+        order: question.order
+      });
+      addedCount++;
+    }
+
+    console.log(`Successfully added ${addedCount} questions to the database.`);
+    return {
+      success: true,
+      message: `Successfully added ${addedCount} questions to the database.`,
+      questionsCount: addedCount
+    };
+  },
+});
+
 export const seedAdmin = mutation({
   handler: async (ctx) => {
     // Check if admin users exist already
@@ -116,17 +152,17 @@ export const seedAdmin = mutation({
     if (existingAdmins.length > 0) {
       return { success: false, message: "Admin users already exist." };
     }
-    
+
     // Create a default admin user
     // In a real application, you would hash the password!
     await ctx.db.insert("adminUsers", {
       username: "admin",
       passwordHash: "admin123", // This should be hashed in production!
     });
-    
-    return { 
-      success: true, 
-      message: "Successfully created default admin user." 
+
+    return {
+      success: true,
+      message: "Successfully created default admin user."
     };
   },
-}); 
+});

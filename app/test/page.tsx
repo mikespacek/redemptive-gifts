@@ -3,14 +3,14 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useQuery, useMutation } from 'convex/react';
+import { useQuery, useMutation, useAction } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import PageLayout from '../components/PageLayout';
 import QuestionCard from '../components/QuestionCard';
 import ProgressBar from '../components/ProgressBar';
 import UserInfoForm from '../components/UserInfoForm';
 import { getUserId, storeUserInfo, extractFirstName, getUserInfo, UserInfo } from '../lib/userId';
-import { asQuery, asMutation } from '../lib/convex-helpers';
+import { asQuery, asMutation, asAction } from '../lib/convex-helpers';
 
 // Define Question type
 interface Question {
@@ -33,6 +33,10 @@ export default function TestPage() {
   // Get all questions from the database
   const questions = useQuery(asQuery<Question[]>(api.questions.getAll));
   const [questionsError, setQuestionsError] = useState<string | null>(null);
+  const [isSeeding, setIsSeeding] = useState(false);
+
+  // Action to seed the database with questions
+  const seedQuestions = useAction(asAction(api.seed.seedQuestionsAction));
 
   // Check if questions loaded successfully
   useEffect(() => {
@@ -235,6 +239,27 @@ export default function TestPage() {
     );
   }
 
+  // Function to handle seeding the database
+  const handleSeedDatabase = async () => {
+    try {
+      setIsSeeding(true);
+      const result = await seedQuestions();
+      console.log('Seed result:', result);
+
+      if (result.success) {
+        // If seeding was successful, reload the page to fetch questions
+        window.location.reload();
+      } else {
+        setQuestionsError(`Failed to seed database: ${result.message}`);
+        setIsSeeding(false);
+      }
+    } catch (error) {
+      console.error('Error seeding database:', error);
+      setQuestionsError(`Error seeding database: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setIsSeeding(false);
+    }
+  };
+
   // Display error message if questions failed to load
   if (questionsError) {
     return (
@@ -247,12 +272,23 @@ export default function TestPage() {
               <p className="text-gray-600 text-sm mb-6">
                 This could be due to a connection issue or a problem with the database.
               </p>
-              <button
-                onClick={() => window.location.reload()}
-                className="w-full bg-black text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors"
-              >
-                Retry
-              </button>
+              <div className="space-y-3">
+                <button
+                  onClick={() => window.location.reload()}
+                  className="w-full bg-black text-white py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors"
+                  disabled={isSeeding}
+                >
+                  Retry
+                </button>
+
+                <button
+                  onClick={handleSeedDatabase}
+                  className="w-full bg-gray-800 text-white py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors"
+                  disabled={isSeeding}
+                >
+                  {isSeeding ? 'Seeding Database...' : 'Initialize Database'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
