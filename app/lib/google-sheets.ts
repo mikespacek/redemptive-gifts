@@ -92,38 +92,28 @@ export async function sendResultToGoogleSheet(result: TestResult): Promise<{ suc
 
     console.log('Formatted data for Google Sheet:', formattedData);
 
-    // Create a hidden iframe for submission
-    const iframe = document.createElement('iframe');
-    iframe.name = 'hidden_iframe';
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
+    // Use fetch API to send data directly
+    console.log('Sending data to Google Sheet using fetch API');
 
-    // Create a form element to submit the data
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = GOOGLE_SHEET_URL;
-    form.target = 'hidden_iframe'; // Target the hidden iframe
+    const response = await fetch(GOOGLE_SHEET_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formattedData),
+      mode: 'cors', // Enable CORS
+    });
 
-    // Create a hidden input field for the data
-    const hiddenField = document.createElement('input');
-    hiddenField.type = 'hidden';
-    hiddenField.name = 'data';
-    hiddenField.value = JSON.stringify(formattedData);
+    // Check if the request was successful
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response from Google Sheet:', errorText);
+      throw new Error(`Failed to submit data: ${response.status} ${response.statusText}`);
+    }
 
-    // Add the field to the form
-    form.appendChild(hiddenField);
-
-    // Add the form to the document body
-    document.body.appendChild(form);
-
-    // Submit the form
-    form.submit();
-
-    // Remove the form from the document after a short delay
-    setTimeout(() => {
-      document.body.removeChild(form);
-      document.body.removeChild(iframe);
-    }, 1000);
+    // Parse the response
+    const responseData = await response.json();
+    console.log('Response from Google Sheet:', responseData);
 
     // Also store the result in localStorage for local access
     localStorage.setItem('testResults', JSON.stringify(result));
@@ -192,4 +182,50 @@ export function getResultById(resultId: string): TestResult | null {
  */
 export function getMostRecentResultByUser(userId: string): TestResult | null {
   return getResultsByUser(userId);
+}
+
+/**
+ * Test the Google Sheets connection
+ *
+ * @returns A promise that resolves with the test result
+ */
+export async function testGoogleSheetsConnection(): Promise<{ success: boolean; message: string }> {
+  try {
+    // Get the Google Sheet URL from environment variables
+    const GOOGLE_SHEET_URL = process.env.NEXT_PUBLIC_GOOGLE_SHEET_URL ||
+      'https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec';
+
+    console.log('Testing Google Sheets connection to URL:', GOOGLE_SHEET_URL);
+
+    // Make a GET request to the Google Sheet URL
+    const response = await fetch(GOOGLE_SHEET_URL, {
+      method: 'GET',
+      mode: 'cors',
+    });
+
+    // Check if the request was successful
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response from Google Sheet:', errorText);
+      return {
+        success: false,
+        message: `Failed to connect to Google Sheet: ${response.status} ${response.statusText}`
+      };
+    }
+
+    // Parse the response
+    const responseData = await response.json();
+    console.log('Response from Google Sheet:', responseData);
+
+    return {
+      success: true,
+      message: 'Successfully connected to Google Sheet'
+    };
+  } catch (error) {
+    console.error('Error testing Google Sheets connection:', error);
+    return {
+      success: false,
+      message: 'Failed to connect to Google Sheet: ' + (error as Error).message
+    };
+  }
 }

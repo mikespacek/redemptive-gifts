@@ -80,11 +80,16 @@ function setupSpreadsheet() {
  */
 function doPost(e) {
   try {
-    // Set up CORS headers
+    // Set up CORS headers for all origins
     const headers = {
       'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
       'Content-Type': 'application/json'
     };
+
+    // Log the incoming request for debugging
+    console.log('Received POST request with data:', e.postData.contents);
 
     // Parse the incoming data
     const data = JSON.parse(e.postData.contents);
@@ -149,6 +154,24 @@ function doOptions(e) {
 
   return ContentService.createTextOutput('')
     .setMimeType(ContentService.MimeType.TEXT)
+    .setHeaders(headers);
+}
+
+/**
+ * Handle GET requests for testing
+ * @param {Object} e - The event object
+ */
+function doGet(e) {
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Content-Type': 'application/json'
+  };
+
+  return ContentService.createTextOutput(JSON.stringify({
+    success: true,
+    message: 'Google Apps Script is working correctly',
+    timestamp: new Date().toISOString()
+  })).setMimeType(ContentService.MimeType.JSON)
     .setHeaders(headers);
 }
 
