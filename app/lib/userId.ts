@@ -32,6 +32,14 @@ export function storeUserInfo(userInfo: UserInfo): void {
   }
 }
 
+// Clear user information but keep the ID
+export function clearUserInfo(): void {
+  if (typeof window !== 'undefined') {
+    // Remove the user info but keep the ID for tracking purposes
+    localStorage.removeItem('redemptiveGiftsUserInfo');
+  }
+}
+
 // Extract first name from full name
 export function extractFirstName(fullName: string): string {
   return fullName.split(' ')[0] || fullName;

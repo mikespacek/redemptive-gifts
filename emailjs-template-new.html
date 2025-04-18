@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Design Results</title>
+  <style>
+    /* Base styles */
+    body {
+      font-family: 'Poppins', 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #333333;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    /* Container */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Header */
+    .header {
+      background-color: #181818 !important;
+      color: #ffffff !important;
+      padding: 30px 20px !important;
+      text-align: center !important;
+    }
+
+    .header h1 {
+      margin: 0 !important;
+      font-size: 28px !important;
+      font-weight: 600 !important;
+      color: #ffffff !important;
+    }
+
+    .header p {
+      margin: 10px 0 0 !important;
+      font-size: 16px !important;
+      color: #ffffff !important;
+      opacity: 0.9 !important;
+    }
+
+    /* Content */
+    .content {
+      padding: 30px 20px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #181818;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    /* Chart section placeholder */
+    .chart-section {
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .chart-placeholder {
+      height: 200px;
+      background-color: #f0f0f0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-style: italic;
+    }
+
+    /* Gift result styles */
+    .gift-result {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .gift-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-right: 15px;
+      flex-shrink: 0;
+      color: white;
+      background-color: #F3762F;
+    }
+
+    .gift-info {
+      flex-grow: 1;
+    }
+
+    .gift-name {
+      font-weight: 600;
+      font-size: 18px;
+      margin: 0 0 5px 0;
+      color: #181818;
+    }
+
+    .gift-title {
+      font-size: 14px;
+      color: #666;
+      margin: 0 0 10px 0;
+    }
+
+    .gift-description {
+      margin: 0;
+      color: #444;
+    }
+
+    /* Strengths and challenges */
+    .list-title {
+      font-weight: 600;
+      margin: 15px 0 8px 0;
+      color: #181818;
+    }
+
+    ul.strengths-list, ul.challenges-list {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    ul.strengths-list li, ul.challenges-list li {
+      margin-bottom: 5px;
+      color: #444;
+    }
+
+    /* Detailed description grid */
+    .description-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 480px) {
+      .description-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .description-item {
+      margin-bottom: 15px;
+    }
+
+    .description-title {
+      font-weight: 600;
+      margin: 0 0 5px 0;
+      color: #181818;
+    }
+
+    .description-content {
+      margin: 0;
+      color: #444;
+    }
+
+    /* Scores table */
+    .scores-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .scores-table th, .scores-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .scores-table th {
+      background-color: #f5f5f5;
+      font-weight: 600;
+      color: #181818;
+    }
+
+    .scores-table td {
+      font-weight: 600;
+    }
+
+    /* Footer */
+    .footer {
+      background-color: #f5f5f5;
+      padding: 20px;
+      text-align: center;
+      font-size: 14px;
+      color: #666666;
+    }
+
+    .footer p {
+      margin: 5px 0;
+    }
+
+    .accent {
+      color: #F3762F;
+    }
+
+    /* Button styles */
+    .button {
+      display: inline-block;
+      background-color: #181818;
+      color: #ffffff;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Your Design Results</h1>
+      <p>Hello {{user_name}}! Here are your test results from {{test_date}}</p>
+    </div>
+
+    <div class="content">
+      <!-- View Full Results Link -->
+      <div class="section" style="text-align: center;">
+        <p style="font-size: 16px; margin-bottom: 15px;">
+          This is a summary of your test results.
+        </p>
+        <p style="font-size: 14px; color: #666;">
+          View your full results with interactive chart at: <a href="{{app_url}}/results" style="color: #F3762F; font-weight: 600;">{{app_url}}/results</a>
+        </p>
+      </div>
+
+      <!-- Dominant Gifts Section -->
+      <div class="section">
+        <h2 class="section-title">Your Dominant Gifts</h2>
+
+        <!-- Primary Gift -->
+        <div class="gift-result">
+          <div class="gift-icon">1</div>
+          <div class="gift-info">
+            <h3 class="gift-name">{{dominant_gift}}</h3>
+            <p class="gift-title">{{principle}}</p>
+            <p class="gift-description">{{summary}}</p>
+
+            <h4 class="list-title">Key Strengths:</h4>
+            <ul class="strengths-list">
+              {{strengths}}
+            </ul>
+          </div>
+        </div>
+
+        <!-- Secondary Gift -->
+        <div class="gift-result">
+          <div class="gift-icon" style="background-color: #666;">2</div>
+          <div class="gift-info">
+            <h3 class="gift-name">Secondary Gift: {{secondary_gift}}</h3>
+            <p class="gift-description">This gift complements your dominant gift and influences your perspective and actions.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Description Section -->
+      <div class="section">
+        <h2 class="section-title">Detailed Description of Your Primary Gift: {{dominant_gift}}</h2>
+
+        <div class="description-grid">
+          <div>
+            <div class="description-item">
+              <h4 class="description-title">Principle:</h4>
+              <p class="description-content">{{principle}}</p>
+            </div>
+
+            <div class="description-item">
+              <h4 class="description-title">Mature Gift:</h4>
+              <p class="description-content">{{mature_gift}}</p>
+            </div>
+
+            <div class="description-item">
+              <h4 class="description-title">Carnal Gift:</h4>
+              <p class="description-content">{{carnal_gift}}</p>
+            </div>
+
+            <div class="description-item">
+              <h4 class="description-title">Battlefield:</h4>
+              <p class="description-content">{{battlefield}}</p>
+            </div>
+          </div>
+
+          <div>
+            <div class="description-item">
+              <h4 class="description-title">Legitimacy Lie:</h4>
+              <p class="description-content">{{legitimacy_lie}}</p>
+            </div>
+
+            <div class="description-item">
+              <h4 class="description-title">Biblical Example:</h4>
+              <p class="description-content">{{biblical_example}}</p>
+            </div>
+
+            <div class="description-item">
+              <h4 class="description-title">Birthright:</h4>
+              <p class="description-content">{{birthright}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gift Scores Section -->
+      <div class="section">
+        <h2 class="section-title">Your Gift Scores</h2>
+
+        <table class="scores-table">
+          <thead>
+            <tr>
+              <th>T<br/>(Teacher)</th>
+              <th>G<br/>(Giver)</th>
+              <th>R<br/>(Ruler)</th>
+              <th>E<br/>(Exhorter)</th>
+              <th>M<br/>(Mercy)</th>
+              <th>P<br/>(Prophet)</th>
+              <th>S<br/>(Servant)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{column_t}}</td>
+              <td>{{column_g}}</td>
+              <td>{{column_r}}</td>
+              <td>{{column_e}}</td>
+              <td>{{column_m}}</td>
+              <td>{{column_p}}</td>
+              <td>{{column_s}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p style="margin-top: 10px; font-size: 14px; color: #666;">Your highest score indicates your redemptive gift.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>This email was sent from the Your Design application.</p>
+      <p>© Union Houston - All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>

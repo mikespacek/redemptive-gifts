@@ -21,7 +21,8 @@ Each person is believed to have one dominant gift that shapes their core view of
 ## Tech Stack
 
 - **Frontend**: React, Next.js, TypeScript, Tailwind CSS, Framer Motion
-- **Backend**: Convex
+- **Database**: Google Sheets API
+- **Email**: EmailJS
 - **Charts**: Chart.js with react-chartjs-2
 - **Forms**: react-hook-form
 
@@ -49,20 +50,24 @@ npm install
 cp .env.example .env.local
 ```
 
-4. Start the development server:
+4. Update the environment variables in `.env.local` with your own values:
+```
+# EmailJS configuration
+NEXT_PUBLIC_EMAILJS_SERVICE_ID=your_service_id
+NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=your_template_id
+NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key
+
+# Google Sheets integration
+NEXT_PUBLIC_GOOGLE_SHEET_URL=your_google_script_url
+
+# Admin email for notifications
+NEXT_PUBLIC_ADMIN_EMAIL=your_email@example.com
+```
+
+5. Start the development server:
 ```
 npm run dev
 ```
-
-5. Initialize the database with seed data:
-```
-npx convex run seed:seedQuestions
-npx convex run seed:seedAdmin
-```
-
-The default admin credentials are:
-- Username: admin
-- Password: admin123
 
 ## Deployment
 

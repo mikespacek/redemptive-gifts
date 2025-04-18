@@ -12,34 +12,19 @@ function run(command) {
 }
 
 try {
-  // Ensure we have the latest code
-  console.log('Pulling latest changes...');
-  run('git pull origin main');
-
   // Clean up any previous build artifacts
   console.log('Cleaning up...');
   if (fs.existsSync('.next')) {
     fs.rmSync('.next', { recursive: true, force: true });
   }
-  if (fs.existsSync('node_modules')) {
-    fs.rmSync('node_modules', { recursive: true, force: true });
-  }
-
-  // Install dependencies
-  console.log('Installing dependencies...');
-  run('npm install');
 
   // Build the application
   console.log('Building the application...');
   run('npm run build');
 
-  // Install Netlify CLI
-  console.log('Installing Netlify CLI...');
-  run('npm install -g netlify-cli@latest');
-
-  // Deploy to Netlify with specific settings
+  // Deploy to Netlify with specific settings using npx
   console.log('Deploying to Netlify...');
-  run('netlify deploy --prod');
+  run('npx netlify-cli deploy --prod --dir=out --site=83234e3c-4e90-427d-b9e3-85e694b208c4');
 
   console.log('Deployment completed successfully!');
 } catch (error) {

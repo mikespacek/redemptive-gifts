@@ -15,11 +15,11 @@ export default function ConvexConnectionTest() {
         // Try with the environment variable URL
         const envUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
         setDetails(`Testing URL: ${envUrl || 'Not available'}`);
-        
+
         if (envUrl) {
           const client = new ConvexReactClient(envUrl);
           let unsubscribe: (() => void) | null = null;
-          
+
           try {
             unsubscribe = client.onStatusChange((connectionStatus) => {
               setStatus(`Connection status: ${connectionStatus}`);
@@ -29,10 +29,10 @@ export default function ConvexConnectionTest() {
                 setTimeout(() => setIsVisible(false), 3000);
               }
             });
-            
+
             // Wait a bit to see if we connect
             await new Promise(resolve => setTimeout(resolve, 5000));
-            
+
             if (unsubscribe) {
               unsubscribe();
             }
@@ -42,12 +42,12 @@ export default function ConvexConnectionTest() {
           }
         } else {
           // Try with a hardcoded URL
-          const hardcodedUrl = 'https://jmcepmahvxhizfkxhfrb.convex.cloud';
+          const hardcodedUrl = 'https://frugal-blackbird-138.convex.cloud';
           setDetails(prev => `${prev}\nFalling back to hardcoded URL: ${hardcodedUrl}`);
-          
+
           const client = new ConvexReactClient(hardcodedUrl);
           let unsubscribe: (() => void) | null = null;
-          
+
           try {
             unsubscribe = client.onStatusChange((connectionStatus) => {
               setStatus(`Fallback connection status: ${connectionStatus}`);
@@ -57,10 +57,10 @@ export default function ConvexConnectionTest() {
                 setTimeout(() => setIsVisible(false), 3000);
               }
             });
-            
+
             // Wait a bit to see if we connect
             await new Promise(resolve => setTimeout(resolve, 5000));
-            
+
             if (unsubscribe) {
               unsubscribe();
             }
@@ -90,7 +90,7 @@ export default function ConvexConnectionTest() {
     <div className="fixed bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg max-w-md border border-gray-200 text-xs font-mono z-50">
       <div className="flex justify-between items-center mb-2">
         <h3 className="font-bold">Convex Connection Test</h3>
-        <button 
+        <button
           onClick={() => setIsVisible(false)}
           className="text-gray-500 hover:text-gray-700"
         >

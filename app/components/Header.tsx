@@ -14,11 +14,11 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-black shadow-custom sticky top-0 z-10 backdrop-blur-sm bg-black/90 border-b border-gray-800">
+    <header className="bg-[#181818] shadow-custom sticky top-0 z-10 backdrop-blur-sm bg-[#181818]/90 border-b border-gray-800">
       <div className="container mx-auto px-6 sm:px-10 lg:px-16 py-4 max-w-6xl">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center space-x-2 group">
-            <span className="text-xl sm:text-2xl font-bold text-white group-hover:text-gray-300 transition-all duration-300">Redemptive Gifts Test</span>
+            <span className="text-xl sm:text-2xl font-bold text-white group-hover:text-gray-300 transition-all duration-300">Your Design</span>
           </Link>
 
           <nav className="hidden md:flex space-x-10">
@@ -101,7 +101,7 @@ const NavLink = ({ href, active, children }: NavLinkProps) => {
       }`}
     >
       {children}
-      <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gray-500 transform origin-left transition-transform duration-300 ${active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></span>
+      <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-[#F3762F] transform origin-left transition-transform duration-300 ${active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></span>
     </Link>
   );
 };
@@ -117,8 +117,8 @@ const MobileNavLink = ({ href, active, children, onClick }: MobileNavLinkProps) 
       onClick={onClick}
       className={`px-5 py-3 rounded-xl transition-all ${
         active
-          ? 'bg-gray-800 text-white font-medium border border-gray-700'
-          : 'text-gray-400 hover:bg-gray-900 hover:text-white'
+          ? 'bg-[#F3762F] text-white font-medium border border-[#F3762F]'
+          : 'text-gray-400 hover:bg-[#F3762F]/20 hover:text-white'
       }`}
     >
       {children}

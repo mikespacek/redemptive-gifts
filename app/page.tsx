@@ -4,32 +4,31 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import PageLayout from './components/PageLayout';
 import { GiftType, giftDescriptions } from './lib/gift-descriptions';
-import BlackButton from './components/BlackButton';
 
 export default function Home() {
   return (
     <PageLayout>
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-indigo-50 to-white">
+      <section className="bg-[#181818] text-white">
         <div className="container mx-auto px-6 sm:px-10 lg:px-16 py-12 md:py-20 max-w-6xl">
           <div className="text-center max-w-3xl mx-auto">
             <motion.h1
-              className="text-4xl md:text-5xl font-bold text-indigo-900"
+              className="text-4xl md:text-5xl font-bold text-white"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              Discover Your Redemptive Gift
+              Discover Your Design
             </motion.h1>
 
             <motion.p
-              className="mt-6 text-lg md:text-xl text-gray-700"
+              className="mt-6 text-lg md:text-xl text-gray-300"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              Based on Arthur Burk's teaching, this test helps you identify your dominant
-              spiritual design and understand how you're uniquely created to impact the world.
+              This test helps you identify your dominant spiritual design and understand
+              how you're uniquely created to impact the world.
             </motion.p>
 
             <motion.div
@@ -41,7 +40,7 @@ export default function Home() {
               <a
                 href="/test"
                 style={{
-                  backgroundColor: '#000000',
+                  backgroundColor: '#F3762F',
                   color: '#FFFFFF',
                   padding: '12px 32px',
                   borderRadius: '8px',
@@ -49,7 +48,7 @@ export default function Home() {
                   fontSize: '18px',
                   display: 'inline-block',
                   textDecoration: 'none',
-                  border: '1px solid #333'
+                  border: 'none'
                 }}
               >
                 Start Test
@@ -60,11 +59,11 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <section className="py-16">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-6 sm:px-10 lg:px-16 py-6 max-w-6xl">
-          <h2 className="text-3xl font-bold text-center">What Are Redemptive Gifts?</h2>
+          <h2 className="text-3xl font-bold text-center text-[#181818]">What Are Spiritual Gifts?</h2>
           <p className="mt-4 text-lg text-center text-gray-700 max-w-3xl mx-auto">
-            Redemptive gifts are based on Romans 12:6-8 and describe seven spiritual gift types that
+            Spiritual gifts are based on Romans 12:6-8 and describe seven gift types that
             reflect different aspects of God's nature. These gifts influence how you see the world,
             process information, and interact with others.
           </p>
@@ -78,7 +77,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
               >
-                <div className={`${giftDescriptions[gift].color} p-4 text-white`}>
+                <div className="bg-[#181818] p-4 text-white">
                   <h3 className="text-xl font-bold flex items-center gap-2">
                     <span>{giftDescriptions[gift].emoji}</span>
                     <span>{giftDescriptions[gift].name}</span>
@@ -95,9 +94,9 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-[#181818] text-white">
         <div className="container mx-auto px-6 sm:px-10 lg:px-16 py-6 max-w-6xl">
-          <h2 className="text-3xl font-bold text-center">How It Works</h2>
+          <h2 className="text-3xl font-bold text-center text-white">How It Works</h2>
 
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
             <motion.div
@@ -106,12 +105,12 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-2xl font-bold mx-auto">
+              <div className="w-16 h-16 bg-[#F3762F] rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto">
                 1
               </div>
-              <h3 className="mt-4 text-xl font-semibold">Take the Test</h3>
-              <p className="mt-2 text-gray-600">
-                Answer 70 questions on a scale of 1-5 to measure your alignment with each gift.
+              <h3 className="mt-4 text-xl font-semibold text-white">Take the Test</h3>
+              <p className="mt-2 text-gray-300">
+                Complete 91 questions using a scoring system of 1, 2, 4, or 5 to identify your spiritual gifts.
               </p>
             </motion.div>
 
@@ -121,11 +120,11 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.2 }}
             >
-              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-2xl font-bold mx-auto">
+              <div className="w-16 h-16 bg-[#F3762F] rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto">
                 2
               </div>
-              <h3 className="mt-4 text-xl font-semibold">Get Your Results</h3>
-              <p className="mt-2 text-gray-600">
+              <h3 className="mt-4 text-xl font-semibold text-white">Get Your Results</h3>
+              <p className="mt-2 text-gray-300">
                 Receive a detailed analysis showing your dominant and secondary gifts.
               </p>
             </motion.div>
@@ -136,11 +135,11 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.4 }}
             >
-              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-2xl font-bold mx-auto">
+              <div className="w-16 h-16 bg-[#F3762F] rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto">
                 3
               </div>
-              <h3 className="mt-4 text-xl font-semibold">Gain Insight</h3>
-              <p className="mt-2 text-gray-600">
+              <h3 className="mt-4 text-xl font-semibold text-white">Gain Insight</h3>
+              <p className="mt-2 text-gray-300">
                 Learn about your unique strengths, challenges, and how to leverage your gifts.
               </p>
             </motion.div>
@@ -155,7 +154,7 @@ export default function Home() {
             <a
               href="/test"
               style={{
-                backgroundColor: '#000000',
+                backgroundColor: '#F3762F',
                 color: '#FFFFFF',
                 padding: '12px 32px',
                 borderRadius: '8px',
@@ -163,7 +162,7 @@ export default function Home() {
                 fontSize: '18px',
                 display: 'inline-block',
                 textDecoration: 'none',
-                border: '1px solid #333'
+                border: 'none'
               }}
             >
               Begin Your Journey

@@ -43,26 +43,26 @@ const QuestionCard = ({
       transition={{ duration: 0.3 }}
     >
       <div className="flex justify-between items-center mb-5">
-        <span className="text-sm font-medium text-gray-700 bg-gray-100 px-4 py-1.5 rounded-full border border-gray-200">
+        <span className="text-sm font-medium text-white bg-[#181818] px-4 py-1.5 rounded-full">
           Question {questionNumber} of {totalQuestions}
         </span>
       </div>
 
       <h3 className="text-lg md:text-xl font-medium mb-8 leading-relaxed text-gray-800">{text}</h3>
 
-      <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 sm:gap-4">
-        {[1, 2, 3, 4, 5].map((score) => (
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 sm:gap-4">
+        {[1, 2, 4, 5].map((score) => (
           <button
             key={score}
             onClick={() => handleSelect(score)}
             className={`flex flex-col items-center p-4 sm:p-5 rounded-xl transition-all ${
               selectedScore === score
-                ? 'bg-gray-100 border-2 border-gray-400 shadow-md'
-                : 'bg-white border border-gray-200 hover:border-gray-400 hover:bg-gray-50'
+                ? 'bg-[#F3762F]/10 border-2 border-[#F3762F] shadow-md'
+                : 'bg-white border border-gray-200 hover:border-[#F3762F] hover:bg-gray-50'
             }`}
           >
-            <span className={`text-lg sm:text-xl font-bold mb-1 sm:mb-2 ${selectedScore === score ? 'text-gray-800' : 'text-gray-600'}`}>{score}</span>
-            <span className={`text-xs text-center ${selectedScore === score ? 'text-gray-700' : 'text-gray-500'}`}>
+            <span className={`text-lg sm:text-xl font-bold mb-1 sm:mb-2 ${selectedScore === score ? 'text-[#F3762F]' : 'text-gray-600'}`}>{score}</span>
+            <span className={`text-xs text-center ${selectedScore === score ? 'text-[#181818]' : 'text-gray-500'}`}>
               {getScoreLabel(score)}
             </span>
           </button>
@@ -76,15 +76,13 @@ const QuestionCard = ({
 function getScoreLabel(score: number): string {
   switch (score) {
     case 1:
-      return 'Strongly Disagree';
+      return 'NEVER';
     case 2:
-      return 'Disagree';
-    case 3:
-      return 'Neutral';
+      return 'SOMETIMES';
     case 4:
-      return 'Agree';
+      return 'MOSTLY';
     case 5:
-      return 'Strongly Agree';
+      return 'ALWAYS';
     default:
       return '';
   }

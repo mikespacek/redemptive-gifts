@@ -4,9 +4,9 @@ import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import PageLayout from '../components/PageLayout';
 
-// Dynamically import the results content component with no SSR
-const ResultsContentDynamic = dynamic(
-  () => import('../components/ResultsContent'),
+// Dynamically import the static results content component with no SSR
+const StaticResultsContentDynamic = dynamic(
+  () => import('../components/StaticResultsContent'),
   { ssr: false }
 );
 
@@ -30,7 +30,7 @@ function ResultsLoader() {
 export default function ResultsPage() {
   return (
     <Suspense fallback={<ResultsLoader />}>
-      <ResultsContentDynamic />
+      <StaticResultsContentDynamic />
     </Suspense>
   );
 }

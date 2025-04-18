@@ -7,6 +7,43 @@ import { GiftType, giftDescriptions } from '../lib/gift-descriptions';
 // Register Chart.js components
 Chart.register(...registerables);
 
+// Add plugin for displaying values on top of bars
+const plugin = {
+  id: 'customCanvasBackgroundColor',
+  beforeDraw: (chart: any) => {
+    const { ctx } = chart;
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, chart.width, chart.height);
+    ctx.restore();
+  }
+};
+
+// Plugin to display values on top of bars
+const datalabelsPlugin = {
+  id: 'datalabels',
+  afterDatasetsDraw: (chart: any) => {
+    const { ctx } = chart;
+    chart.data.datasets.forEach((dataset: any, datasetIndex: number) => {
+      const meta = chart.getDatasetMeta(datasetIndex);
+      if (!meta.hidden) {
+        meta.data.forEach((element: any, index: number) => {
+          // Get the data value
+          const value = dataset.data[index];
+
+          // Draw the value on top of the bar
+          ctx.fillStyle = '#000000';
+          ctx.font = 'bold 14px Arial';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(value, element.x, element.y - 8);
+        });
+      }
+    });
+  }
+};
+
 interface ResultsChartProps {
   scores: Record<GiftType, number>;
 }
@@ -27,14 +64,35 @@ const ResultsChart = ({ scores }: ResultsChartProps) => {
     if (!ctx) return;
 
     // Get gift names and their corresponding scores
-    const labels = Object.keys(scores).map(
-      (gift) => giftDescriptions[gift as GiftType].name
+    const giftEntries = Object.entries(scores);
+
+    // Sort gifts by name for consistent display order
+    const sortedGifts = giftEntries.sort((a, b) => {
+      const orderMap: Record<GiftType, number> = {
+        'prophet': 1,
+        'servant': 2,
+        'teacher': 3,
+        'exhorter': 4,
+        'giver': 5,
+        'ruler': 6,
+        'mercy': 7
+      };
+      return orderMap[a[0] as GiftType] - orderMap[b[0] as GiftType];
+    });
+
+    const labels = sortedGifts.map(
+      ([gift]) => giftDescriptions[gift as GiftType].name
     );
-    const data = Object.values(scores);
-    
+
+    // Use the actual score values
+    const data = sortedGifts.map(([_, score]) => score);
+
+    // Log the data to verify we have different values
+    console.log('Chart data:', data);
+
     // Get colors for each gift
-    const backgroundColors = Object.keys(scores).map(
-      (gift) => {
+    const backgroundColors = sortedGifts.map(
+      ([gift]) => {
         switch(gift) {
           case 'prophet': return 'rgba(239, 68, 68, 0.7)';  // red
           case 'servant': return 'rgba(59, 130, 246, 0.7)'; // blue
@@ -48,8 +106,13 @@ const ResultsChart = ({ scores }: ResultsChartProps) => {
       }
     );
 
+    // Find the max value for proper scaling
+    const maxValue = Math.max(...data);
+    const yAxisMax = Math.ceil(maxValue * 1.2); // Add 20% padding for value labels
+
     // Create the chart
     chartInstance.current = new Chart(ctx, {
+      plugins: [plugin, datalabelsPlugin],
       type: 'bar',
       data: {
         labels,
@@ -60,29 +123,46 @@ const ResultsChart = ({ scores }: ResultsChartProps) => {
             backgroundColor: backgroundColors,
             borderColor: backgroundColors.map(color => color.replace('0.7', '1')),
             borderWidth: 1,
+            // Custom data labels will be handled by our plugin
           },
         ],
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
+          // Register our custom plugins
+          customCanvasBackgroundColor: { enabled: true },
+          datalabels: { enabled: true },
           legend: {
             display: false,
           },
           tooltip: {
             callbacks: {
               label: function(context) {
-                return `Score: ${context.parsed.y.toFixed(2)}`;
+                return `Score: ${context.parsed.y}`;
               }
+            }
+          },
+          title: {
+            display: true,
+            text: 'Your Gift Profile Scores',
+            font: {
+              size: 16,
+              weight: 'bold'
+            },
+            padding: {
+              top: 10,
+              bottom: 20
             }
           }
         },
         scales: {
           y: {
             beginAtZero: true,
-            max: 5,
+            max: yAxisMax, // Dynamic max based on data
             ticks: {
-              stepSize: 1,
+              precision: 0, // Show whole numbers only
             },
           },
         },
@@ -98,13 +178,10 @@ const ResultsChart = ({ scores }: ResultsChartProps) => {
   }, [scores]);
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h3 className="text-xl font-semibold mb-4">Your Gift Profile</h3>
-      <div className="h-80">
-        <canvas ref={chartRef}></canvas>
-      </div>
+    <div className="h-96">
+      <canvas ref={chartRef}></canvas>
     </div>
   );
 };
 
-export default ResultsChart; 
+export default ResultsChart;

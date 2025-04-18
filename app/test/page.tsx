@@ -4,9 +4,9 @@ import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import PageLayout from '../components/PageLayout';
 
-// Dynamically import the test content component with no SSR
-const TestContentDynamic = dynamic(
-  () => import('../components/TestContent'),
+// Dynamically import the static test content component with no SSR
+const StaticTestContentDynamic = dynamic(
+  () => import('../components/StaticTestContent'),
   { ssr: false }
 );
 
@@ -48,7 +48,7 @@ function TestLoader() {
 export default function TestPage() {
   return (
     <Suspense fallback={<TestLoader />}>
-      <TestContentDynamic />
+      <StaticTestContentDynamic />
     </Suspense>
   );
 }

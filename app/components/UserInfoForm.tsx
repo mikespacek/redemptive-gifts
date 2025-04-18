@@ -51,6 +51,7 @@ export default function UserInfoForm({ onSubmit }: UserInfoFormProps) {
       <h2 className="text-xl font-semibold mb-6 text-gray-800">Before we begin</h2>
       <p className="mb-6 text-gray-600">
         Please provide your information so we can personalize your results and send you a copy.
+        <span className="text-black font-medium">Your name and email are required for each test submission.</span>
       </p>
 
       <form onSubmit={handleSubmit}>
@@ -63,8 +64,9 @@ export default function UserInfoForm({ onSubmit }: UserInfoFormProps) {
             id="fullName"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 text-gray-800 bg-white"
+            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-[#F3762F] focus:ring-1 focus:ring-[#F3762F] text-gray-800 bg-white"
             placeholder="Enter your full name"
+            required
           />
           {errors.fullName && (
             <p className="mt-1 text-red-600 text-sm">{errors.fullName}</p>
@@ -80,8 +82,9 @@ export default function UserInfoForm({ onSubmit }: UserInfoFormProps) {
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-gray-500 focus:ring-1 focus:ring-gray-500 text-gray-800 bg-white"
+            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-[#F3762F] focus:ring-1 focus:ring-[#F3762F] text-gray-800 bg-white"
             placeholder="Enter your email address"
+            required
           />
           {errors.email && (
             <p className="mt-1 text-red-600 text-sm">{errors.email}</p>
@@ -90,7 +93,7 @@ export default function UserInfoForm({ onSubmit }: UserInfoFormProps) {
 
         <button
           type="submit"
-          className="w-full bg-black hover:bg-gray-800 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center"
+          className="w-full bg-[#F3762F] hover:bg-[#F3762F]/90 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center"
         >
           Start Test
         </button>

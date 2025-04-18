@@ -4,13 +4,13 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-black text-white py-12 mt-16 border-t border-gray-800">
+    <footer className="bg-[#181818] text-white py-12 mt-16 border-t border-gray-800">
       <div className="container mx-auto px-6 sm:px-10 lg:px-16 max-w-6xl">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
-            <h3 className="text-xl font-semibold mb-5 text-white">Redemptive Gifts Test</h3>
+            <h3 className="text-xl font-semibold mb-5 text-white">Your Design</h3>
             <p className="text-gray-400 leading-relaxed">
-              Discover your dominant redemptive gift based on Arthur Burk's teaching and understand how you're uniquely designed to impact the world.
+              Discover your dominant spiritual gift and understand how you're uniquely designed to impact the world.
             </p>
           </div>
 
@@ -47,14 +47,14 @@ const Footer = () => {
           <div>
             <h3 className="text-xl font-semibold mb-5 text-white">About</h3>
             <p className="text-gray-400 leading-relaxed">
-              This test is based on Arthur Burk's teaching on the redemptive gifts from Romans 12:6-8. It helps identify your primary spiritual design and gifting.
+              This test is based on the spiritual gifts from Romans 12:6-8. It helps identify your primary spiritual design and gifting.
             </p>
           </div>
         </div>
 
         <div className="mt-10 pt-8 border-t border-gray-800">
           <p className="text-center text-gray-500">
-            &copy; {currentYear} Redemptive Gifts Test. All rights reserved.
+            &copy; {currentYear} Your Design. All rights reserved.
           </p>
         </div>
       </div>

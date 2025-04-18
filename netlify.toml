@@ -1,24 +1,19 @@
 [build]
   command = "npm run build"
-  publish = ".next"
+  publish = "out"
 
 [build.environment]
-  NEXT_PUBLIC_CONVEX_URL = "https://jmcepmahvxhizfkxhfrb.convex.cloud"
   NODE_VERSION = "18"
+  NEXT_USE_NETLIFY_EDGE = "true"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
+# These redirects ensure that all page routes get served by the Next.js app
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-# Custom 404 page
-[[redirects]]
-  from = "/*"
-  to = "/netlify-error.html"
-  status = 404
 
 # Custom error page for client-side errors
 [[redirects]]
