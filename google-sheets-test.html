@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheets JSONP Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            white-space: pre-wrap;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Sheets JSONP Test</h1>
+    
+    <p>This page tests the connection to your Google Sheets script using JSONP.</p>
+    
+    <div>
+        <label for="scriptUrl">Google Script URL:</label>
+        <input type="text" id="scriptUrl" style="width: 100%; margin: 10px 0;" 
+               placeholder="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec">
+    </div>
+    
+    <button id="testButton">Test Connection</button>
+    <button id="testFormButton">Test Form Submission</button>
+    
+    <div id="result">Results will appear here...</div>
+    
+    <script>
+        document.getElementById('testButton').addEventListener('click', function() {
+            testJSONP();
+        });
+        
+        document.getElementById('testFormButton').addEventListener('click', function() {
+            testFormSubmission();
+        });
+        
+        function testJSONP() {
+            const resultDiv = document.getElementById('result');
+            const scriptUrl = document.getElementById('scriptUrl').value.trim();
+            
+            if (!scriptUrl) {
+                resultDiv.innerHTML = '<span class="error">Please enter a Google Script URL</span>';
+                return;
+            }
+            
+            resultDiv.innerHTML = 'Testing connection...';
+            
+            // Create a unique callback name
+            const callbackName = 'googleSheetsCallback_' + Math.random().toString(36).substring(2, 15);
+            
+            // Add the callback to the window object
+            window[callbackName] = function(data) {
+                // Clean up
+                document.body.removeChild(script);
+                delete window[callbackName];
+                
+                console.log('Received response via JSONP:', data);
+                resultDiv.innerHTML = '<span class="success">Success!</span>\n\nResponse from Google Sheet:\n' + 
+                                     JSON.stringify(data, null, 2);
+            };
+            
+            // Create a script element
+            const script = document.createElement('script');
+            
+            // Add a timestamp to prevent caching
+            const timestamp = new Date().getTime();
+            script.src = `${scriptUrl}?callback=${callbackName}&_=${timestamp}`;
+            
+            // Handle errors
+            script.onerror = function() {
+                // Clean up
+                document.body.removeChild(script);
+                delete window[callbackName];
+                
+                console.error('JSONP request failed');
+                resultDiv.innerHTML = '<span class="error">Error!</span>\n\nFailed to connect to Google Sheet via JSONP.\n' +
+                                     'Check the console for more details.';
+            };
+            
+            // Set a timeout
+            const timeoutId = setTimeout(function() {
+                // Check if the script is still in the DOM
+                if (document.body.contains(script)) {
+                    // Clean up
+                    document.body.removeChild(script);
+                    delete window[callbackName];
+                    
+                    console.error('JSONP request timed out');
+                    resultDiv.innerHTML = '<span class="error">Error!</span>\n\nConnection to Google Sheet timed out.\n' +
+                                         'Make sure your Google Apps Script is deployed as a web app with "Anyone" access.';
+                }
+            }, 10000); // 10 second timeout
+            
+            // Add the script to the page
+            document.body.appendChild(script);
+            
+            console.log('JSONP request sent to Google Sheet:', scriptUrl);
+        }
+        
+        function testFormSubmission() {
+            const resultDiv = document.getElementById('result');
+            const scriptUrl = document.getElementById('scriptUrl').value.trim();
+            
+            if (!scriptUrl) {
+                resultDiv.innerHTML = '<span class="error">Please enter a Google Script URL</span>';
+                return;
+            }
+            
+            resultDiv.innerHTML = 'Testing form submission...';
+            
+            // Create a hidden iframe for submission
+            const iframe = document.createElement('iframe');
+            iframe.name = 'hidden_iframe';
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            
+            // Create a form element to submit the data
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = scriptUrl;
+            form.target = 'hidden_iframe'; // Target the hidden iframe
+            
+            // Create test data
+            const testData = {
+                timestamp: new Date().toISOString(),
+                userId: 'test-user-' + Math.random().toString(36).substring(2, 8),
+                fullName: 'Test User',
+                email: 'test@example.com',
+                dominantGift: 'teacher',
+                secondaryGift: 'prophet',
+                teacherScore: 85,
+                giverScore: 70,
+                rulerScore: 65,
+                exhorterScore: 60,
+                mercyScore: 55,
+                prophetScore: 75,
+                servantScore: 50
+            };
+            
+            // Create a hidden input field for the data
+            const hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.name = 'data';
+            hiddenField.value = JSON.stringify(testData);
+            
+            // Add the field to the form
+            form.appendChild(hiddenField);
+            
+            // Add the form to the document body
+            document.body.appendChild(form);
+            
+            // Submit the form
+            form.submit();
+            
+            // Update the result
+            resultDiv.innerHTML = '<span class="success">Form submitted!</span>\n\n' +
+                                 'Check your Google Sheet to see if the test data was added.\n\n' +
+                                 'Test data:\n' + JSON.stringify(testData, null, 2);
+            
+            // Remove the form from the document after a short delay
+            setTimeout(() => {
+                document.body.removeChild(form);
+                document.body.removeChild(iframe);
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

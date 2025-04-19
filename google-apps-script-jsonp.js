@@ -1,6 +1,6 @@
 /**
  * Google Apps Script for handling Redemptive Gifts Test submissions
- * with maximum CORS permissiveness for Netlify deployment
+ * with JSONP support for cross-domain requests
  */
 
 // Set up the spreadsheet headers on first run
@@ -45,42 +45,49 @@ function setupSpreadsheet() {
 }
 
 /**
- * Handle GET requests for testing
+ * Handle GET requests for testing with JSONP support
  */
 function doGet(e) {
-  // Set CORS headers for all responses
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Access-Control-Max-Age': '3600',
-    'Content-Type': 'application/json'
-  };
-
-  return ContentService.createTextOutput(JSON.stringify({
+  // Check if this is a JSONP request
+  const callback = e.parameter.callback;
+  
+  // Prepare the response data
+  const responseData = {
     success: true,
     message: 'Google Apps Script is working correctly',
     timestamp: new Date().toISOString(),
     params: e.parameter || 'No parameters'
-  }))
-  .setMimeType(ContentService.MimeType.JSON)
-  .setHeaders(headers);
+  };
+  
+  // If a callback is provided, wrap the response in the callback function (JSONP)
+  if (callback) {
+    return ContentService.createTextOutput(callback + '(' + JSON.stringify(responseData) + ')')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  } 
+  
+  // Otherwise, return a standard JSON response
+  return ContentService.createTextOutput(JSON.stringify(responseData))
+    .setMimeType(ContentService.MimeType.JSON)
+    .setHeaders({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    });
 }
 
 /**
  * Handle POST requests for data submission
  */
 function doPost(e) {
-  // Set CORS headers for all responses
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Access-Control-Max-Age': '3600',
-    'Content-Type': 'application/json'
-  };
-
   try {
+    // Set CORS headers for all responses
+    const headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Content-Type': 'application/json'
+    };
+
     // Log the incoming request for debugging
     console.log('Received POST request');
     
@@ -102,9 +109,6 @@ function doPost(e) {
       console.log('No data found in standard locations. Logging all properties:');
       console.log('e.parameter:', JSON.stringify(e.parameter));
       console.log('e.parameters:', JSON.stringify(e.parameters));
-      console.log('e.contextPath:', e.contextPath);
-      console.log('e.contentLength:', e.contentLength);
-      console.log('e.queryString:', e.queryString);
       
       // Try to extract data from any parameter
       if (e.parameter) {
@@ -147,27 +151,54 @@ function doPost(e) {
     // Append the data to the sheet
     sheet.appendRow(rowData);
 
-    // Return success response
-    return ContentService.createTextOutput(JSON.stringify({
+    // Check if this is a JSONP request
+    const callback = e.parameter && e.parameter.callback;
+    
+    // Prepare the response data
+    const responseData = {
       success: true,
       message: 'Data received and processed successfully',
       data: data
-    }))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders(headers);
+    };
+    
+    // If a callback is provided, wrap the response in the callback function (JSONP)
+    if (callback) {
+      return ContentService.createTextOutput(callback + '(' + JSON.stringify(responseData) + ')')
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+    
+    // Otherwise, return a standard JSON response
+    return ContentService.createTextOutput(JSON.stringify(responseData))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeaders(headers);
 
   } catch (error) {
     // Log the error
     console.error('Error processing request:', error);
 
-    // Return error response
-    return ContentService.createTextOutput(JSON.stringify({
+    // Check if this is a JSONP request
+    const callback = e.parameter && e.parameter.callback;
+    
+    // Prepare the error response
+    const errorResponse = {
       success: false,
       message: 'Error processing request: ' + error.toString(),
       error: error.stack
-    }))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders(headers);
+    };
+    
+    // If a callback is provided, wrap the response in the callback function (JSONP)
+    if (callback) {
+      return ContentService.createTextOutput(callback + '(' + JSON.stringify(errorResponse) + ')')
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+    
+    // Otherwise, return a standard JSON response
+    return ContentService.createTextOutput(JSON.stringify(errorResponse))
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+      });
   }
 }
 
@@ -175,16 +206,14 @@ function doPost(e) {
  * Handle OPTIONS requests for CORS preflight
  */
 function doOptions(e) {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Access-Control-Max-Age': '3600'
-  };
-
   return ContentService.createTextOutput('')
     .setMimeType(ContentService.MimeType.TEXT)
-    .setHeaders(headers);
+    .setHeaders({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '3600'
+    });
 }
 
 /**
