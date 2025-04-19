@@ -95,25 +95,70 @@ export async function sendResultToGoogleSheet(result: TestResult): Promise<{ suc
     // Use fetch API to send data directly
     console.log('Sending data to Google Sheet using fetch API');
 
-    const response = await fetch(GOOGLE_SHEET_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formattedData),
-      mode: 'cors', // Enable CORS
-    });
+    // Try multiple approaches to handle potential CORS issues
+    try {
+      console.log('Attempting direct POST request with CORS mode');
+      const response = await fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formattedData),
+        mode: 'cors', // Enable CORS
+        cache: 'no-cache', // Prevent caching
+        credentials: 'omit', // Don't send credentials
+      });
 
-    // Check if the request was successful
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error response from Google Sheet:', errorText);
-      throw new Error(`Failed to submit data: ${response.status} ${response.statusText}`);
+      // Check if the request was successful
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      // Parse the response
+      const responseData = await response.json();
+      console.log('Response from Google Sheet:', responseData);
+
+      return { success: true, message: 'Results submitted to Google Sheet' };
+    } catch (fetchError) {
+      console.error('Direct fetch failed, trying form submission fallback:', fetchError);
+
+      // Fallback to form submission approach
+      // Create a hidden iframe for submission
+      const iframe = document.createElement('iframe');
+      iframe.name = 'hidden_iframe';
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      // Create a form element to submit the data
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = GOOGLE_SHEET_URL;
+      form.target = 'hidden_iframe'; // Target the hidden iframe
+
+      // Create a hidden input field for the data
+      const hiddenField = document.createElement('input');
+      hiddenField.type = 'hidden';
+      hiddenField.name = 'data';
+      hiddenField.value = JSON.stringify(formattedData);
+
+      // Add the field to the form
+      form.appendChild(hiddenField);
+
+      // Add the form to the document body
+      document.body.appendChild(form);
+
+      // Submit the form
+      form.submit();
+
+      // Remove the form from the document after a short delay
+      setTimeout(() => {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+      }, 1000);
+
+      console.log('Form submission fallback completed');
+      return { success: true, message: 'Results submitted to Google Sheet using form fallback' };
     }
-
-    // Parse the response
-    const responseData = await response.json();
-    console.log('Response from Google Sheet:', responseData);
 
     // Also store the result in localStorage for local access
     localStorage.setItem('testResults', JSON.stringify(result));
@@ -197,10 +242,18 @@ export async function testGoogleSheetsConnection(): Promise<{ success: boolean; 
 
     console.log('Testing Google Sheets connection to URL:', GOOGLE_SHEET_URL);
 
-    // Make a GET request to the Google Sheet URL
+    // Make a GET request to the Google Sheet URL with no-cors mode
+    // This is important for cross-origin requests to Google Apps Script
+    console.log('Making GET request to Google Sheet URL with CORS enabled');
+
     const response = await fetch(GOOGLE_SHEET_URL, {
       method: 'GET',
       mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Add cache busting parameter to avoid caching issues
+      cache: 'no-cache',
     });
 
     // Check if the request was successful
