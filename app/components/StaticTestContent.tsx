@@ -233,10 +233,12 @@ export default function StaticTestContent() {
     }
   };
 
-  // Calculate progress
+  // Calculate missed questions and progress
   const currentQuestion = questions[currentQuestionIndex];
   const totalQuestions = questions.length;
-  const progress = totalQuestions > 0 ? Math.round((Object.keys(answers).length / totalQuestions) * 100) : 0;
+  const missedQuestionsCount = checkMissedQuestions().length;
+  const answeredCount = totalQuestions - missedQuestionsCount;
+  const progress = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
 
   // Create the question ID in the same format used in handleAnswer
   const currentQuestionId = currentQuestion ? `q${currentQuestion.id}` : '';
@@ -247,8 +249,12 @@ export default function StaticTestContent() {
   console.log('Current question ID:', currentQuestionId);
   console.log('Answers:', answers);
   console.log('Is current question answered:', isCurrentQuestionAnswered);
+  console.log('Missed questions count:', missedQuestionsCount);
+  console.log('Progress:', progress);
 
-  const canComplete = progress === 100 && totalQuestions > 0;
+  // Allow completing the test even if not all questions are answered
+  // The handleCompleteTest function will check for missed questions and show the alert
+  const canComplete = currentQuestionIndex === totalQuestions - 1;
 
   if (isLoading) {
     return (
