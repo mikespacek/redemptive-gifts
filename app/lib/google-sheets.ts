@@ -151,14 +151,28 @@ export async function sendResultToGoogleSheet(result: TestResult): Promise<{ suc
  */
 export function getResultsByUser(userId: string): TestResult | null {
   try {
-    // For now, we're just using localStorage
-    const storedResults = localStorage.getItem('testResults');
-    if (storedResults) {
-      const result = JSON.parse(storedResults) as TestResult;
-      if (result.userId === userId) {
-        return result;
-      }
+    // Try to get results from localStorage using multiple keys
+    let storedResults = localStorage.getItem('redemptiveGiftsTestResults');
+
+    // If not found, try the old key
+    if (!storedResults) {
+      storedResults = localStorage.getItem('testResults');
     }
+
+    if (storedResults) {
+      try {
+        const result = JSON.parse(storedResults) as TestResult;
+        console.log('Retrieved test results from localStorage:', result);
+        if (result.userId === userId) {
+          return result;
+        }
+      } catch (parseError) {
+        console.error('Error parsing stored results:', parseError);
+      }
+    } else {
+      console.log('No test results found in localStorage');
+    }
+
     return null;
   } catch (error) {
     console.error('Error getting results for user:', error);
@@ -174,11 +188,26 @@ export function getResultsByUser(userId: string): TestResult | null {
  */
 export function getResultById(resultId: string): TestResult | null {
   try {
-    // For now, we're just using localStorage
-    const storedResults = localStorage.getItem('testResults');
-    if (storedResults) {
-      return JSON.parse(storedResults) as TestResult;
+    // Try to get results from localStorage using multiple keys
+    let storedResults = localStorage.getItem('redemptiveGiftsTestResults');
+
+    // If not found, try the old key
+    if (!storedResults) {
+      storedResults = localStorage.getItem('testResults');
     }
+
+    if (storedResults) {
+      try {
+        const result = JSON.parse(storedResults) as TestResult;
+        console.log('Retrieved test results by ID from localStorage:', result);
+        return result;
+      } catch (parseError) {
+        console.error('Error parsing stored results:', parseError);
+      }
+    } else {
+      console.log('No test results found in localStorage');
+    }
+
     return null;
   } catch (error) {
     console.error('Error getting result by ID:', error);

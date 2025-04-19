@@ -21,20 +21,58 @@ export default function StaticResultsContent() {
     // Simulate loading delay
     setTimeout(() => {
       try {
+        console.log('Attempting to load test results...');
+
+        // Check if localStorage is available
+        if (typeof window !== 'undefined' && window.localStorage) {
+          console.log('localStorage is available');
+
+          // Log all localStorage keys for debugging
+          const keys = Object.keys(localStorage);
+          console.log('All localStorage keys:', keys);
+
+          // Check for test results directly
+          const directResults = localStorage.getItem('redemptiveGiftsTestResults') || localStorage.getItem('testResults');
+          console.log('Direct test results from localStorage:', directResults ? 'Found' : 'Not found');
+        } else {
+          console.error('localStorage is not available');
+        }
+
         // Get the result ID from the URL if available
         const resultId = searchParams?.get('id');
-        const userId = searchParams?.get('userId') || localStorage.getItem('userId');
+        const userId = searchParams?.get('userId') || localStorage.getItem('userId') || localStorage.getItem('redemptiveGiftsUserId');
+
+        console.log('Result ID from URL:', resultId);
+        console.log('User ID:', userId);
 
         let loadedResult = null;
 
         // Try to get results by ID first
         if (resultId) {
+          console.log('Trying to get results by ID:', resultId);
           loadedResult = getResultById(resultId);
+          console.log('Results by ID:', loadedResult ? 'Found' : 'Not found');
         }
 
         // If no result by ID, try to get by user ID
         if (!loadedResult && userId) {
+          console.log('Trying to get results by user ID:', userId);
           loadedResult = getMostRecentResultByUser(userId);
+          console.log('Results by user ID:', loadedResult ? 'Found' : 'Not found');
+        }
+
+        // Try one more direct approach if no results found yet
+        if (!loadedResult) {
+          console.log('Trying direct approach to get test results...');
+          try {
+            const directResults = localStorage.getItem('redemptiveGiftsTestResults') || localStorage.getItem('testResults');
+            if (directResults) {
+              loadedResult = JSON.parse(directResults) as TestResult;
+              console.log('Found test results directly from localStorage');
+            }
+          } catch (parseError) {
+            console.error('Error parsing direct results:', parseError);
+          }
         }
 
         if (loadedResult) {

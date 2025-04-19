@@ -155,7 +155,12 @@ export default function StaticTestContent() {
 
     console.log('Test results object:', results);
 
+    // Store results with a more reliable key that includes the user ID
+    localStorage.setItem('redemptiveGiftsTestResults', JSON.stringify(results));
+    // Also store with the old key for backward compatibility
     localStorage.setItem('testResults', JSON.stringify(results));
+
+    console.log('Test results stored in localStorage with keys: redemptiveGiftsTestResults and testResults');
 
     // Send results to Google Sheet and email
     try {
