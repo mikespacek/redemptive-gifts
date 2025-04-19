@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Sheets Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        h1, h2 { color: #333; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"] { width: 100%; padding: 8px; box-sizing: border-box; }
+        button { 
+            background-color: #4285F4; 
+            color: white; 
+            border: none; 
+            padding: 10px 15px; 
+            cursor: pointer; 
+            margin-right: 10px;
+            border-radius: 4px;
+        }
+        button.orange { background-color: #F4B400; }
+        button:hover { opacity: 0.9; }
+        #result { 
+            margin-top: 20px; 
+            padding: 15px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Google Sheets Debug Test</h1>
+        
+        <div class="form-group">
+            <label for="scriptUrl">Google Script URL:</label>
+            <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec">
+        </div>
+        
+        <div>
+            <button id="testGet">Test GET Request</button>
+            <button id="testPost" class="orange">Test POST Request</button>
+        </div>
+        
+        <h2>Test Data</h2>
+        <div class="form-group">
+            <label for="testData">JSON Data to Send (POST only):</label>
+            <textarea id="testData" rows="10" style="width: 100%; font-family: monospace;">
+{
+  "timestamp": "2023-11-15T12:00:00.000Z",
+  "userId": "test-user-123",
+  "fullName": "Test User",
+  "email": "test@example.com",
+  "dominantGift": "teacher",
+  "secondaryGift": "prophet",
+  "teacherScore": 85,
+  "giverScore": 70,
+  "rulerScore": 65,
+  "exhorterScore": 60,
+  "mercyScore": 55,
+  "prophetScore": 75,
+  "servantScore": 50
+}
+            </textarea>
+        </div>
+        
+        <h2>Result</h2>
+        <div id="result">Results will appear here...</div>
+    </div>
+    
+    <script>
+        document.getElementById('testGet').addEventListener('click', function() {
+            const scriptUrl = document.getElementById('scriptUrl').value.trim();
+            const resultDiv = document.getElementById('result');
+            
+            if (!scriptUrl) {
+                resultDiv.innerHTML = '<span class="error">Please enter a Google Script URL</span>';
+                return;
+            }
+            
+            resultDiv.innerHTML = 'Testing GET request...';
+            
+            // Add a timestamp to prevent caching
+            const timestamp = new Date().getTime();
+            const url = `${scriptUrl}?test=debug&_=${timestamp}`;
+            
+            fetch(url)
+                .then(response => {
+                    resultDiv.innerHTML = `Response status: ${response.status} ${response.statusText}<br>`;
+                    return response.text();
+                })
+                .then(text => {
+                    try {
+                        const data = JSON.parse(text);
+                        resultDiv.innerHTML += '<span class="success">GET Success!</span><br><br>' + 
+                                              JSON.stringify(data, null, 2);
+                    } catch (e) {
+                        resultDiv.innerHTML += '<br>Raw response (not JSON):<br>' + text;
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `<span class="error">GET Error: ${error.message}</span><br><br>` +
+                                         'Trying JSONP fallback...<br>';
+                    
+                    // Try JSONP as fallback
+                    const callbackName = 'jsonpCallback' + Math.floor(Math.random() * 1000000);
+                    
+                    // Create callback function
+                    window[callbackName] = function(data) {
+                        resultDiv.innerHTML += '<span class="success">JSONP Success!</span><br><br>' + 
+                                              JSON.stringify(data, null, 2);
+                        document.head.removeChild(script);
+                        delete window[callbackName];
+                    };
+                    
+                    // Create script element
+                    const script = document.createElement('script');
+                    script.src = `${scriptUrl}?callback=${callbackName}&_=${timestamp}`;
+                    
+                    // Handle errors
+                    script.onerror = function() {
+                        resultDiv.innerHTML += '<span class="error">JSONP Error: Failed to load script</span><br><br>' +
+                                              'Trying iframe form submission as last resort...<br>';
+                        document.head.removeChild(script);
+                        delete window[callbackName];
+                        
+                        // Try iframe as last resort
+                        const iframe = document.createElement('iframe');
+                        iframe.name = 'debug_frame';
+                        iframe.style.display = 'none';
+                        document.body.appendChild(iframe);
+                        
+                        const form = document.createElement('form');
+                        form.method = 'GET';
+                        form.action = scriptUrl;
+                        form.target = 'debug_frame';
+                        document.body.appendChild(form);
+                        
+                        form.submit();
+                        
+                        resultDiv.innerHTML += 'Form submitted via iframe. Check your Google Sheet for results.';
+                        
+                        setTimeout(() => {
+                            document.body.removeChild(form);
+                            document.body.removeChild(iframe);
+                        }, 1000);
+                    };
+                    
+                    // Add script to page
+                    document.head.appendChild(script);
+                });
+        });
+        
+        document.getElementById('testPost').addEventListener('click', function() {
+            const scriptUrl = document.getElementById('scriptUrl').value.trim();
+            const resultDiv = document.getElementById('result');
+            let testData;
+            
+            try {
+                testData = JSON.parse(document.getElementById('testData').value);
+            } catch (e) {
+                resultDiv.innerHTML = `<span class="error">Error parsing JSON: ${e.message}</span>`;
+                return;
+            }
+            
+            if (!scriptUrl) {
+                resultDiv.innerHTML = '<span class="error">Please enter a Google Script URL</span>';
+                return;
+            }
+            
+            resultDiv.innerHTML = 'Testing POST request...';
+            
+            // Create a hidden iframe for submission
+            const iframe = document.createElement('iframe');
+            iframe.name = 'hidden_iframe';
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            
+            // Create a form element to submit the data
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = scriptUrl;
+            form.target = 'hidden_iframe'; // Target the hidden iframe
+            
+            // Create a hidden input field for the data
+            const hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.name = 'data';
+            hiddenField.value = JSON.stringify(testData);
+            
+            // Add the field to the form
+            form.appendChild(hiddenField);
+            
+            // Add the form to the document body
+            document.body.appendChild(form);
+            
+            // Submit the form
+            form.submit();
+            
+            // Update the result
+            resultDiv.innerHTML = '<span class="success">Form submitted!</span><br><br>' +
+                                 'Check your Google Sheet to see if the test data was added.<br><br>' +
+                                 'Data sent:<br>' + JSON.stringify(testData, null, 2);
+            
+            // Remove the form from the document after a short delay
+            setTimeout(() => {
+                document.body.removeChild(form);
+                document.body.removeChild(iframe);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

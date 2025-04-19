@@ -57,14 +57,14 @@ export async function sendResultToGoogleSheet(result: TestResult): Promise<{ suc
       email: result.email || 'Not provided',
       dominantGift: result.dominantGift,
       secondaryGift: result.secondaryGift,
-      // Use the actual gift scores that match what's shown on the results page
-      teacherScore: result.scores.teacher || 0,
-      giverScore: result.scores.giver || 0,
-      rulerScore: result.scores.ruler || 0,
-      exhorterScore: result.scores.exhorter || 0,
-      mercyScore: result.scores.mercy || 0,
-      prophetScore: result.scores.prophet || 0,
-      servantScore: result.scores.servant || 0,
+      // Use the column scores if available, otherwise use the gift scores
+      teacherScore: result.columnScores?.T || result.scores.teacher || 0,
+      giverScore: result.columnScores?.G || result.scores.giver || 0,
+      rulerScore: result.columnScores?.R || result.scores.ruler || 0,
+      exhorterScore: result.columnScores?.E || result.scores.exhorter || 0,
+      mercyScore: result.columnScores?.M || result.scores.mercy || 0,
+      prophetScore: result.columnScores?.P || result.scores.prophet || 0,
+      servantScore: result.columnScores?.S || result.scores.servant || 0,
     };
 
     // Log both sets of scores for debugging

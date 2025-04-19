@@ -38,42 +38,13 @@ export default function StaticResultsContent() {
         }
 
         if (loadedResult) {
+          // Use the actual test results from localStorage
           setResult(loadedResult);
+          console.log('Loaded actual test results:', loadedResult);
         } else {
-          // If no results in localStorage, create sample results
-          const userInfo = getUserInfo();
-
-          // Create sample results with varied scores
-          const sampleResult: TestResult = {
-            userId: userInfo?.userId || 'anonymous',
-            scores: {
-              prophet: 42,
-              servant: 28,
-              teacher: 35,
-              exhorter: 52,
-              giver: 21,
-              ruler: 38,
-              mercy: 45
-            },
-            dominantGift: 'exhorter',
-            secondaryGift: 'mercy',
-            timestamp: Date.now(),
-            fullName: userInfo?.fullName || 'Anonymous User',
-            email: userInfo?.email || '',
-            firstName: userInfo?.firstName || 'Friend',
-            // Add column scores for the results sheet format
-            columnScores: {
-              T: 35, // Teacher (Column 1)
-              G: 21, // Giver (Column 2)
-              R: 38, // Ruler (Column 3)
-              E: 52, // Exhorter (Column 4)
-              M: 45, // Mercy (Column 5)
-              P: 42, // Prophet (Column 6)
-              S: 28  // Servant (Column 7)
-            }
-          };
-
-          setResult(sampleResult);
+          // If no results in localStorage, redirect to the test page
+          console.log('No test results found, redirecting to test page');
+          setError('No test results found. Please take the test first.');
         }
       } catch (err) {
         console.error('Error loading results:', err);
