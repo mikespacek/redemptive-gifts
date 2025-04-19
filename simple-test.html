@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Google Sheets Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { padding: 10px; margin: 10px 0; }
+        #result { margin-top: 20px; padding: 10px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>Simple Google Sheets Test</h1>
+    
+    <div>
+        <label for="scriptUrl">Google Script URL:</label><br>
+        <input type="text" id="scriptUrl" style="width: 100%; margin: 10px 0;" 
+               placeholder="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec">
+    </div>
+    
+    <button id="testGet">Test GET Request</button>
+    <button id="testPost">Test POST Request</button>
+    
+    <div id="result">Results will appear here...</div>
+    
+    <script>
+        document.getElementById('testGet').addEventListener('click', function() {
+            const scriptUrl = document.getElementById('scriptUrl').value.trim();
+            const resultDiv = document.getElementById('result');
+            
+            if (!scriptUrl) {
+                resultDiv.innerHTML = 'Please enter a Google Script URL';
+                return;
+            }
+            
+            resultDiv.innerHTML = 'Testing GET request...';
+            
+            // Simple fetch request
+            fetch(scriptUrl)
+                .then(response => response.json())
+                .then(data => {
+                    resultDiv.innerHTML = 'GET Success: ' + JSON.stringify(data);
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = 'GET Error: ' + error.message;
+                    
+                    // Try JSONP as fallback
+                    resultDiv.innerHTML += '<br><br>Trying JSONP fallback...';
+                    tryJsonp(scriptUrl);
+                });
+        });
+        
+        document.getElementById('testPost').addEventListener('click', function() {
+            const scriptUrl = document.getElementById('scriptUrl').value.trim();
+            const resultDiv = document.getElementById('result');
+            
+            if (!scriptUrl) {
+                resultDiv.innerHTML = 'Please enter a Google Script URL';
+                return;
+            }
+            
+            resultDiv.innerHTML = 'Testing POST request...';
+            
+            // Create a form for submission
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = scriptUrl;
+            form.target = 'hidden_frame';
+            
+            // Create test data
+            const testData = {
+                timestamp: new Date().toISOString(),
+                userId: 'test-user-' + Math.random().toString(36).substring(2, 8),
+                fullName: 'Test User',
+                email: 'test@example.com',
+                dominantGift: 'teacher',
+                secondaryGift: 'prophet',
+                teacherScore: 85,
+                giverScore: 70,
+                rulerScore: 65,
+                exhorterScore: 60,
+                mercyScore: 55,
+                prophetScore: 75,
+                servantScore: 50
+            };
+            
+            // Add data to form
+            const dataInput = document.createElement('input');
+            dataInput.type = 'hidden';
+            dataInput.name = 'data';
+            dataInput.value = JSON.stringify(testData);
+            form.appendChild(dataInput);
+            
+            // Create hidden iframe
+            const iframe = document.createElement('iframe');
+            iframe.name = 'hidden_frame';
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            
+            // Add form to body and submit
+            document.body.appendChild(form);
+            form.submit();
+            
+            resultDiv.innerHTML = 'POST request sent. Check your Google Sheet for new data.<br><br>' +
+                                 'Data sent: ' + JSON.stringify(testData);
+            
+            // Clean up
+            setTimeout(function() {
+                document.body.removeChild(form);
+                document.body.removeChild(iframe);
+            }, 1000);
+        });
+        
+        function tryJsonp(url) {
+            const resultDiv = document.getElementById('result');
+            const callbackName = 'jsonpCallback' + Math.floor(Math.random() * 1000000);
+            
+            // Create callback function
+            window[callbackName] = function(data) {
+                resultDiv.innerHTML = 'JSONP Success: ' + JSON.stringify(data);
+                document.head.removeChild(script);
+                delete window[callbackName];
+            };
+            
+            // Create script element
+            const script = document.createElement('script');
+            script.src = url + '?callback=' + callbackName;
+            
+            // Handle errors
+            script.onerror = function() {
+                resultDiv.innerHTML = 'JSONP Error: Failed to load script';
+                document.head.removeChild(script);
+                delete window[callbackName];
+            };
+            
+            // Add script to page
+            document.head.appendChild(script);
+        }
+    </script>
+</body>
+</html>

@@ -20,67 +20,30 @@ export default function TestGoogleSheetsPage() {
     try {
       console.log('Starting Google Sheets connection test...');
 
-      // Create a unique callback name
-      const callbackName = 'googleSheetsCallback_' + Math.random().toString(36).substring(2, 15);
+      // Use a simple fetch request to test the connection
+      console.log('Testing connection to Google Sheet URL:', scriptUrl);
 
-      // Create a promise that will be resolved when the JSONP callback is called
-      const jsonpPromise = new Promise((resolve, reject) => {
-        // Add the callback to the window object
-        window[callbackName] = (data) => {
-          // Clean up
-          document.body.removeChild(script);
-          delete window[callbackName];
-          clearTimeout(timeoutId);
+      // Create a unique ID for this test
+      const testId = 'test-' + Math.random().toString(36).substring(2, 8);
 
-          console.log('Received response via JSONP:', data);
-          resolve({
-            success: true,
-            message: 'Successfully connected to Google Sheet via JSONP',
-            data: data
-          });
-        };
-
-        // Create a script element
-        const script = document.createElement('script');
-
-        // Add a timestamp to prevent caching
-        const timestamp = new Date().getTime();
-        script.src = `${scriptUrl}?callback=${callbackName}&_=${timestamp}`;
-
-        // Handle errors
-        script.onerror = () => {
-          // Clean up
-          document.body.removeChild(script);
-          delete window[callbackName];
-          clearTimeout(timeoutId);
-
-          console.error('JSONP request failed');
-          reject(new Error('Failed to connect to Google Sheet via JSONP'));
-        };
-
-        // Set a timeout
-        const timeoutId = setTimeout(() => {
-          // Check if the script is still in the DOM
-          if (document.body.contains(script)) {
-            // Clean up
-            document.body.removeChild(script);
-            delete window[callbackName];
-
-            console.error('JSONP request timed out');
-            reject(new Error('Connection to Google Sheet timed out'));
-          }
-        }, 10000); // 10 second timeout
-
-        // Add the script to the page
-        document.body.appendChild(script);
-
-        console.log('JSONP request sent to Google Sheet:', scriptUrl);
+      // Make a direct fetch request with a timestamp to prevent caching
+      const timestamp = new Date().getTime();
+      const response = await fetch(`${scriptUrl}?test=${testId}&_=${timestamp}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        mode: 'no-cors', // This allows the request to succeed even with CORS issues
       });
 
-      // Wait for the JSONP request to complete
-      const result = await jsonpPromise;
-      console.log('Google Sheets test result:', result);
-      setTestResult(result);
+      // Since we're using no-cors mode, we can't actually read the response
+      // But if we get here, the request didn't throw an error
+      console.log('Request completed without throwing an error');
+
+      setTestResult({
+        success: true,
+        message: 'Connection test completed. The request was sent successfully, but we cannot verify the response due to CORS restrictions. Try the form submission test to verify if data is being saved.',
+      });
     } catch (error) {
       console.error('Caught error in test page:', error);
       setTestResult({
@@ -172,7 +135,7 @@ export default function TestGoogleSheetsPage() {
         <div className="mb-6">
           <p className="mb-4">
             This page allows you to test if the Google Sheets integration is properly configured.
-            You can test both the JSONP connection and form submission.
+            You can test both the connection and form submission.
           </p>
 
           <div className="flex flex-wrap gap-4">
@@ -181,7 +144,7 @@ export default function TestGoogleSheetsPage() {
               disabled={isLoading}
               className="bg-[#181818] text-white px-6 py-3 rounded-xl font-medium hover:bg-[#333] transition-colors disabled:opacity-50"
             >
-              {isLoading ? 'Testing Connection...' : 'Test JSONP Connection'}
+              {isLoading ? 'Testing Connection...' : 'Test Connection'}
             </button>
 
             <button
@@ -221,8 +184,8 @@ export default function TestGoogleSheetsPage() {
             <h3 className="font-bold text-sm mb-2">Troubleshooting Tips:</h3>
             <ul className="list-disc ml-6 text-sm">
               <li>Make sure your Google Apps Script is deployed as a web app with <strong>"Anyone"</strong> access.</li>
-              <li>Check that your Google Apps Script includes proper JSONP support (callback parameter handling).</li>
-              <li>Try using the standalone test page: <code>google-sheets-test.html</code></li>
+              <li>Try using the standalone test page: <code>simple-test.html</code></li>
+              <li>Make sure your Google Apps Script is using the simplified version: <code>google-apps-script-simple.js</code></li>
               <li>Check browser console for detailed error messages.</li>
             </ul>
           </div>
