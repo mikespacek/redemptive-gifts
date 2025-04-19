@@ -11,6 +11,7 @@ import { getUserId, storeUserInfo, extractFirstName, getUserInfo, clearUserInfo,
 import { questions, giftTypeMapping } from '../data/redemptiveGiftsQuestions';
 import { sendResultToGoogleSheet } from '../lib/google-sheets';
 import { sendResultsEmailJS } from '../lib/emailjs';
+import MissedQuestionsAlert from './MissedQuestionsAlert';
 
 export default function StaticTestContent() {
   const router = useRouter();
@@ -20,6 +21,8 @@ export default function StaticTestContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [showUserForm, setShowUserForm] = useState(true);
+  const [showMissedAlert, setShowMissedAlert] = useState(false);
+  const [missedQuestions, setMissedQuestions] = useState<number[]>([]);
 
   // Get/create user ID and always show the user form
   useEffect(() => {
@@ -89,8 +92,43 @@ export default function StaticTestContent() {
     setShowUserForm(false);
   };
 
+  // Function to check for missed questions
+  const checkMissedQuestions = () => {
+    const missed: number[] = [];
+
+    // Check each question to see if it has been answered
+    questions.forEach(question => {
+      const questionId = `q${question.id}`;
+      if (!answers[questionId]) {
+        missed.push(question.id);
+      }
+    });
+
+    return missed;
+  };
+
+  // Function to navigate to a specific question
+  const goToQuestion = (questionId: number) => {
+    // Find the index of the question in the questions array
+    const index = questions.findIndex(q => q.id === questionId);
+    if (index !== -1) {
+      setCurrentQuestionIndex(index);
+      setShowMissedAlert(false);
+    }
+  };
+
   // Complete the test
   const handleCompleteTest = async () => {
+    // Check for missed questions
+    const missed = checkMissedQuestions();
+
+    if (missed.length > 0) {
+      // Show alert with missed questions
+      setMissedQuestions(missed);
+      setShowMissedAlert(true);
+      return;
+    }
+
     // Set loading state
     setIsLoading(true);
 
@@ -274,6 +312,14 @@ export default function StaticTestContent() {
             </div>
           ) : (
             <>
+              {/* Missed Questions Alert */}
+              {showMissedAlert && (
+                <MissedQuestionsAlert
+                  missedQuestions={missedQuestions}
+                  onClose={() => setShowMissedAlert(false)}
+                  onGoToQuestion={goToQuestion}
+                />
+              )}
               <ProgressBar
                 currentQuestion={currentQuestionIndex + 1}
                 totalQuestions={totalQuestions}

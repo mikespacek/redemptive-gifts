@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Sheets Cleanup Tool</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+        h1, h2 { color: #333; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"] { width: 100%; padding: 8px; box-sizing: border-box; }
+        button { 
+            background-color: #4285F4; 
+            color: white; 
+            border: none; 
+            padding: 10px 15px; 
+            cursor: pointer; 
+            margin-right: 10px;
+            border-radius: 4px;
+        }
+        button.red { background-color: #EA4335; }
+        button:hover { opacity: 0.9; }
+        #result { 
+            margin-top: 20px; 
+            padding: 15px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .instructions { 
+            background-color: #FFF3E0; 
+            padding: 15px; 
+            border-left: 4px solid #FF9800; 
+            margin-bottom: 20px;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Google Sheets Cleanup Tool</h1>
+        
+        <div class="instructions">
+            <h3>Instructions:</h3>
+            <ol>
+                <li>Open your Google Sheet</li>
+                <li>Go to Extensions > Apps Script</li>
+                <li>Replace the entire script with the content from <code>google-apps-script-fixed.js</code></li>
+                <li>Save the script</li>
+                <li>Run the <code>cleanupSpreadsheet</code> function:
+                    <ul>
+                        <li>Select <code>cleanupSpreadsheet</code> from the function dropdown</li>
+                        <li>Click the "Run" button (play icon)</li>
+                    </ul>
+                </li>
+                <li>Deploy a new version as a web app:
+                    <ul>
+                        <li>Click on Deploy > New deployment</li>
+                        <li>Select type: "Web app"</li>
+                        <li>Set "Execute as" to "Me"</li>
+                        <li>Set "Who has access" to "Anyone"</li>
+                        <li>Click "Deploy"</li>
+                        <li>Copy the new web app URL</li>
+                    </ul>
+                </li>
+                <li>Update the <code>NEXT_PUBLIC_GOOGLE_SHEET_URL</code> in your <code>.env.local</code> file with the new URL</li>
+                <li>Redeploy your application to Netlify</li>
+            </ol>
+        </div>
+        
+        <h2>What This Will Fix:</h2>
+        <p>The updated script will:</p>
+        <ul>
+            <li>Properly handle form-urlencoded data that's causing the errors in your spreadsheet</li>
+            <li>Clean up existing error entries in your spreadsheet</li>
+            <li>Provide better debugging information for future submissions</li>
+        </ul>
+        
+        <h2>Manual Cleanup</h2>
+        <p>If you prefer to clean up the spreadsheet manually:</p>
+        <ol>
+            <li>Open your Google Sheet</li>
+            <li>Look for rows where the timestamp column contains JSON data (starts with <code>{"timestamp"</code>)</li>
+            <li>Delete these rows</li>
+        </ol>
+        
+        <h2>Testing After Cleanup</h2>
+        <p>After cleaning up and updating the script:</p>
+        <ol>
+            <li>Complete a test submission at your website</li>
+            <li>Check if the data appears correctly in your Google Sheet</li>
+            <li>Verify that the scores match what's shown on the results page</li>
+        </ol>
+    </div>
+</body>
+</html>
