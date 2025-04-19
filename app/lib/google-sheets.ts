@@ -92,81 +92,48 @@ export async function sendResultToGoogleSheet(result: TestResult): Promise<{ suc
 
     console.log('Formatted data for Google Sheet:', formattedData);
 
-    // Use fetch API to send data directly
-    console.log('Sending data to Google Sheet using fetch API');
+    // Use form submission approach which is more reliable for Google Sheets
+    console.log('Sending data to Google Sheet using form submission');
 
-    // Try multiple approaches to handle potential CORS issues
-    try {
-      console.log('Attempting direct POST request with CORS mode');
-      const response = await fetch(GOOGLE_SHEET_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formattedData),
-        mode: 'cors', // Enable CORS
-        cache: 'no-cache', // Prevent caching
-        credentials: 'omit', // Don't send credentials
-      });
+    // Create a hidden iframe for submission
+    const iframe = document.createElement('iframe');
+    iframe.name = 'hidden_iframe';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
 
-      // Check if the request was successful
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+    // Create a form element to submit the data
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = GOOGLE_SHEET_URL;
+    form.target = 'hidden_iframe'; // Target the hidden iframe
 
-      // Parse the response
-      const responseData = await response.json();
-      console.log('Response from Google Sheet:', responseData);
+    // Create a hidden input field for the data
+    const hiddenField = document.createElement('input');
+    hiddenField.type = 'hidden';
+    hiddenField.name = 'data';
+    hiddenField.value = JSON.stringify(formattedData);
 
-      return { success: true, message: 'Results submitted to Google Sheet' };
-    } catch (fetchError) {
-      console.error('Direct fetch failed, trying form submission fallback:', fetchError);
+    // Add the field to the form
+    form.appendChild(hiddenField);
 
-      // Fallback to form submission approach
-      // Create a hidden iframe for submission
-      const iframe = document.createElement('iframe');
-      iframe.name = 'hidden_iframe';
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
+    // Add the form to the document body
+    document.body.appendChild(form);
 
-      // Create a form element to submit the data
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = GOOGLE_SHEET_URL;
-      form.target = 'hidden_iframe'; // Target the hidden iframe
+    // Submit the form
+    form.submit();
 
-      // Create a hidden input field for the data
-      const hiddenField = document.createElement('input');
-      hiddenField.type = 'hidden';
-      hiddenField.name = 'data';
-      hiddenField.value = JSON.stringify(formattedData);
+    // Remove the form from the document after a short delay
+    setTimeout(() => {
+      document.body.removeChild(form);
+      document.body.removeChild(iframe);
+    }, 1000);
 
-      // Add the field to the form
-      form.appendChild(hiddenField);
+    console.log('Form submission completed');
 
-      // Add the form to the document body
-      document.body.appendChild(form);
-
-      // Submit the form
-      form.submit();
-
-      // Remove the form from the document after a short delay
-      setTimeout(() => {
-        document.body.removeChild(form);
-        document.body.removeChild(iframe);
-      }, 1000);
-
-      console.log('Form submission fallback completed');
-      return { success: true, message: 'Results submitted to Google Sheet using form fallback' };
-    }
-
-    // Also store the result in localStorage for local access
+    // Store the result in localStorage for local access
     localStorage.setItem('testResults', JSON.stringify(result));
 
-    return {
-      success: true,
-      message: 'Results submitted to Google Sheet'
-    };
+    return { success: true, message: 'Results submitted to Google Sheet' };
   } catch (error) {
     console.error('Error sending results to Google Sheet:', error);
     return {
@@ -242,38 +209,65 @@ export async function testGoogleSheetsConnection(): Promise<{ success: boolean; 
 
     console.log('Testing Google Sheets connection to URL:', GOOGLE_SHEET_URL);
 
-    // Make a GET request to the Google Sheet URL with no-cors mode
-    // This is important for cross-origin requests to Google Apps Script
-    console.log('Making GET request to Google Sheet URL with CORS enabled');
+    // Try using JSONP approach with a dynamic script tag
+    return new Promise((resolve) => {
+      // Create a unique callback name
+      const callbackName = 'googleSheetsCallback_' + Math.random().toString(36).substring(2, 15);
 
-    const response = await fetch(GOOGLE_SHEET_URL, {
-      method: 'GET',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      // Add cache busting parameter to avoid caching issues
-      cache: 'no-cache',
-    });
+      // Add the callback to the window object
+      (window as any)[callbackName] = (data: any) => {
+        // Clean up
+        document.body.removeChild(script);
+        delete (window as any)[callbackName];
 
-    // Check if the request was successful
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error response from Google Sheet:', errorText);
-      return {
-        success: false,
-        message: `Failed to connect to Google Sheet: ${response.status} ${response.statusText}`
+        console.log('Received response via JSONP:', data);
+        resolve({
+          success: true,
+          message: 'Successfully connected to Google Sheet via JSONP'
+        });
       };
-    }
 
-    // Parse the response
-    const responseData = await response.json();
-    console.log('Response from Google Sheet:', responseData);
+      // Create a script element
+      const script = document.createElement('script');
 
-    return {
-      success: true,
-      message: 'Successfully connected to Google Sheet'
-    };
+      // Add a timestamp to prevent caching
+      const timestamp = new Date().getTime();
+      script.src = `${GOOGLE_SHEET_URL}?callback=${callbackName}&_=${timestamp}`;
+
+      // Handle errors
+      script.onerror = () => {
+        // Clean up
+        document.body.removeChild(script);
+        delete (window as any)[callbackName];
+
+        console.error('JSONP request failed');
+        resolve({
+          success: false,
+          message: 'Failed to connect to Google Sheet via JSONP'
+        });
+      };
+
+      // Set a timeout
+      const timeoutId = setTimeout(() => {
+        // Check if the script is still in the DOM
+        if (document.body.contains(script)) {
+          // Clean up
+          document.body.removeChild(script);
+          delete (window as any)[callbackName];
+
+          console.error('JSONP request timed out');
+          resolve({
+            success: false,
+            message: 'Connection to Google Sheet timed out'
+          });
+        }
+      }, 10000); // 10 second timeout
+
+      // Add the script to the page
+      document.body.appendChild(script);
+
+      console.log('JSONP request sent to Google Sheet');
+    });
   } catch (error) {
     console.error('Error testing Google Sheets connection:', error);
     return {
