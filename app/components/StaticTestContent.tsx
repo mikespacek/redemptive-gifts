@@ -119,18 +119,20 @@ export default function StaticTestContent() {
 
   // Complete the test
   const handleCompleteTest = async () => {
-    // Check for missed questions
-    const missed = checkMissedQuestions();
+    try {
+      // Check for missed questions
+      const missed = checkMissedQuestions();
 
-    if (missed.length > 0) {
-      // Show alert with missed questions
-      setMissedQuestions(missed);
-      setShowMissedAlert(true);
-      return;
-    }
+      if (missed.length > 0) {
+        // Show alert with missed questions
+        setMissedQuestions(missed);
+        setShowMissedAlert(true);
+        return;
+      }
 
-    // Set loading state
-    setIsLoading(true);
+      // Set loading state
+      setIsLoading(true);
+      console.log('Starting test completion process...');
 
     // Calculate results based on answers
     const scores: Record<string, number> = {
@@ -205,8 +207,19 @@ export default function StaticTestContent() {
       // Only send to Google Sheets if we have user info
       if (userInfo?.fullName && userInfo?.email) {
         console.log('Attempting to send results to Google Sheet...');
-        await sendResultToGoogleSheet(results);
-        console.log('Results sent to Google Sheet');
+        try {
+          const sheetResult = await sendResultToGoogleSheet(results);
+          console.log('Google Sheet result:', sheetResult);
+
+          if (sheetResult.success) {
+            console.log('Results sent to Google Sheet successfully');
+          } else {
+            console.warn('Google Sheet submission returned error:', sheetResult.message);
+          }
+        } catch (sheetError) {
+          console.error('Error sending to Google Sheet:', sheetError);
+          // Continue with the test - don't block the user from seeing results
+        }
 
         // Send email to admin using EmailJS
         console.log('Sending email notification to admin using EmailJS...');
@@ -219,16 +232,25 @@ export default function StaticTestContent() {
           }
         } catch (emailError) {
           console.error('Error sending email with EmailJS:', emailError);
+          // Continue with the test - don't block the user from seeing results
         }
       } else {
         console.log('Not sending to Google Sheet or email - missing user info');
       }
     } catch (error) {
-      console.error('Error sending results:', error);
+      console.error('Error in submission process:', error);
       // Continue anyway - we don't want to block the user from seeing their results
     } finally {
+      // Make sure we always set loading to false and navigate to results
       setIsLoading(false);
+      console.log('Navigating to results page...');
       // Navigate to results page
+      router.push('/results');
+    }
+    } catch (finalError) {
+      console.error('Critical error in test completion:', finalError);
+      setIsLoading(false);
+      // Still try to navigate to results even if there was an error
       router.push('/results');
     }
   };
