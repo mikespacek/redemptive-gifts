@@ -14,7 +14,7 @@ export default function AboutPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-black">About Redemptive Gifts</h1>
+            <h1 className="text-white">About Your Design</h1>
 
             <div className="mt-8">
               <h2>What are Redemptive Gifts?</h2>
@@ -37,7 +37,7 @@ export default function AboutPage() {
 
               <div className="mt-4 space-y-6">
                 <div className="card">
-                  <h3 className="text-red-600">Prophet</h3>
+                  <h3 className="text-[#F3762F]">Prophet</h3>
                   <p>
                     The Prophet gift represents God's principle of authority. Prophets have a keen ability
                     to discern between right and wrong and can quickly identify problems in systems,
@@ -46,7 +46,7 @@ export default function AboutPage() {
                 </div>
 
                 <div className="card">
-                  <h3 className="text-blue-600">Servant</h3>
+                  <h3 className="text-[#F3762F]">Servant</h3>
                   <p>
                     The Servant gift reflects God's principle of authority through service. Those with
                     this gift find genuine joy in meeting practical needs, often working behind the scenes
@@ -56,7 +56,7 @@ export default function AboutPage() {
                 </div>
 
                 <div className="card">
-                  <h3 className="text-green-600">Teacher</h3>
+                  <h3 className="text-[#F3762F]">Teacher</h3>
                   <p>
                     The Teacher gift embodies God's principle of authority through knowledge and truth.
                     Teachers have a deep love for accurate information and are driven to research thoroughly
@@ -66,7 +66,7 @@ export default function AboutPage() {
                 </div>
 
                 <div className="card">
-                  <h3 className="text-yellow-600">Exhorter</h3>
+                  <h3 className="text-[#F3762F]">Exhorter</h3>
                   <p>
                     The Exhorter gift reflects God's principle of authority through encouragement and
                     motivation. Exhorters naturally see potential and possibilities where others see problems.
@@ -75,7 +75,7 @@ export default function AboutPage() {
                 </div>
 
                 <div className="card">
-                  <h3 className="text-purple-600">Giver</h3>
+                  <h3 className="text-[#F3762F]">Giver</h3>
                   <p>
                     The Giver gift embodies God's principle of authority through stewardship and provision.
                     Givers have an innate ability to acquire, manage, and distribute resources with wisdom
@@ -85,7 +85,7 @@ export default function AboutPage() {
                 </div>
 
                 <div className="card">
-                  <h3 className="text-orange-600">Ruler</h3>
+                  <h3 className="text-[#F3762F]">Ruler</h3>
                   <p>
                     The Ruler gift represents God's principle of authority through leadership and
                     implementation. Rulers have a natural ability to organize people and resources toward
@@ -95,7 +95,7 @@ export default function AboutPage() {
                 </div>
 
                 <div className="card">
-                  <h3 className="text-pink-600">Mercy</h3>
+                  <h3 className="text-[#F3762F]">Mercy</h3>
                   <p>
                     The Mercy gift reflects God's principle of authority through compassion and empathy.
                     Those with this gift have a natural ability to sense emotions and bring comfort to others.
@@ -114,8 +114,12 @@ export default function AboutPage() {
                 design and purpose.
               </p>
               <p>
-                The test consists of 70 statements that you'll rate on a scale from 1 (Strongly Disagree)
-                to 5 (Strongly Agree). Your honest responses will produce the most accurate results.
+                The test consists of 91 questions that you'll rate on a scale from 1 (NEVER) to 2 (SOMETIMES)
+                to 4 (MOSTLY) to 5 (ALWAYS). Your honest responses will produce the most accurate results.
+              </p>
+              <p>
+                <strong>Important:</strong> Please note that you must complete the test in one session as your progress
+                cannot be saved. The test typically takes about 15-20 minutes to complete.
               </p>
             </div>
 
@@ -127,9 +131,9 @@ export default function AboutPage() {
 
             <div className="mt-16 text-sm text-gray-500">
               <p>
-                Note: This test is based on Arthur Burk's teaching and is designed for personal insight.
-                It is not a scientific or psychological assessment. For more information about redemptive
-                gifts, please explore Arthur Burk's materials through Sapphire Leadership Group.
+                Note: This test is designed for personal insight and spiritual growth.
+                It is not a scientific or psychological assessment. The results are meant to help you
+                understand your unique design and how you can best serve in your community and relationships.
               </p>
             </div>
           </motion.div>
