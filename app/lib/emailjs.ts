@@ -64,22 +64,46 @@ export async function testEmailJSConfig(): Promise<{ success: boolean; message: 
 
     // Format date in 12-hour format: MM/DD/YYYY hh:mm:ss AM/PM
     const formatDate = (date: Date | number): string => {
-      const d = new Date(date);
+      try {
+        const d = new Date(date);
 
-      // Format date as MM/DD/YYYY
-      const month = (d.getMonth() + 1).toString().padStart(2, '0');
-      const day = d.getDate().toString().padStart(2, '0');
-      const year = d.getFullYear();
+        // Check if date is valid
+        if (isNaN(d.getTime())) {
+          console.error('Invalid date:', date);
+          // Use current date as fallback
+          const now = new Date();
+          return formatDate(now);
+        }
 
-      // Format time in 12-hour format with AM/PM
-      let hours = d.getHours();
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      hours = hours % 12;
-      hours = hours ? hours : 12; // the hour '0' should be '12'
-      const minutes = d.getMinutes().toString().padStart(2, '0');
-      const seconds = d.getSeconds().toString().padStart(2, '0');
+        // Format date as MM/DD/YYYY
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const day = d.getDate().toString().padStart(2, '0');
+        const year = d.getFullYear();
 
-      return `${month}/${day}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+        // Format time in 12-hour format with AM/PM
+        let hours = d.getHours();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        const minutes = d.getMinutes().toString().padStart(2, '0');
+        const seconds = d.getSeconds().toString().padStart(2, '0');
+
+        return `${month}/${day}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+      } catch (error) {
+        console.error('Error formatting date:', error);
+        // Return current date as fallback
+        const now = new Date();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        const year = now.getFullYear();
+        let hours = now.getHours();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        return `${month}/${day}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+      }
     };
 
     // Format the date for display
@@ -219,22 +243,46 @@ export async function sendResultsEmailJS(result: TestResult): Promise<{ success:
 
     // Format date in 12-hour format: MM/DD/YYYY hh:mm:ss AM/PM
     const formatDate = (date: Date | number): string => {
-      const d = new Date(date);
+      try {
+        const d = new Date(date);
 
-      // Format date as MM/DD/YYYY
-      const month = (d.getMonth() + 1).toString().padStart(2, '0');
-      const day = d.getDate().toString().padStart(2, '0');
-      const year = d.getFullYear();
+        // Check if date is valid
+        if (isNaN(d.getTime())) {
+          console.error('Invalid date:', date);
+          // Use current date as fallback
+          const now = new Date();
+          return formatDate(now);
+        }
 
-      // Format time in 12-hour format with AM/PM
-      let hours = d.getHours();
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      hours = hours % 12;
-      hours = hours ? hours : 12; // the hour '0' should be '12'
-      const minutes = d.getMinutes().toString().padStart(2, '0');
-      const seconds = d.getSeconds().toString().padStart(2, '0');
+        // Format date as MM/DD/YYYY
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        const day = d.getDate().toString().padStart(2, '0');
+        const year = d.getFullYear();
 
-      return `${month}/${day}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+        // Format time in 12-hour format with AM/PM
+        let hours = d.getHours();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        const minutes = d.getMinutes().toString().padStart(2, '0');
+        const seconds = d.getSeconds().toString().padStart(2, '0');
+
+        return `${month}/${day}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+      } catch (error) {
+        console.error('Error formatting date:', error);
+        // Return current date as fallback
+        const now = new Date();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        const year = now.getFullYear();
+        let hours = now.getHours();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        return `${month}/${day}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+      }
     };
 
     // Format the date for display
