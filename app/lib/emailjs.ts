@@ -62,12 +62,28 @@ export async function testEmailJSConfig(): Promise<{ success: boolean; message: 
     // Get the application URL from environment or use a default
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://your-design.unionhouston.com';
 
+    // Format date in 12-hour format: MM/DD/YYYY hh:mm:ss AM/PM
+    const formatDate = (date: Date | number): string => {
+      const d = new Date(date);
+
+      // Format date as MM/DD/YYYY
+      const month = (d.getMonth() + 1).toString().padStart(2, '0');
+      const day = d.getDate().toString().padStart(2, '0');
+      const year = d.getFullYear();
+
+      // Format time in 12-hour format with AM/PM
+      let hours = d.getHours();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      const minutes = d.getMinutes().toString().padStart(2, '0');
+      const seconds = d.getSeconds().toString().padStart(2, '0');
+
+      return `${month}/${day}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+    };
+
     // Format the date for display
-    const testDate = new Date().toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    const testDate = formatDate(new Date());
 
     // Prepare template parameters
     const templateParams = {
@@ -201,12 +217,28 @@ export async function sendResultsEmailJS(result: TestResult): Promise<{ success:
     // Get the application URL from environment or use a default
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://your-design.unionhouston.com';
 
+    // Format date in 12-hour format: MM/DD/YYYY hh:mm:ss AM/PM
+    const formatDate = (date: Date | number): string => {
+      const d = new Date(date);
+
+      // Format date as MM/DD/YYYY
+      const month = (d.getMonth() + 1).toString().padStart(2, '0');
+      const day = d.getDate().toString().padStart(2, '0');
+      const year = d.getFullYear();
+
+      // Format time in 12-hour format with AM/PM
+      let hours = d.getHours();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      const minutes = d.getMinutes().toString().padStart(2, '0');
+      const seconds = d.getSeconds().toString().padStart(2, '0');
+
+      return `${month}/${day}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+    };
+
     // Format the date for display
-    const testDate = new Date(result.timestamp).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    const testDate = formatDate(result.timestamp);
 
     // Capitalize gift names
     const capitalizedDominantGift = result.dominantGift.charAt(0).toUpperCase() + result.dominantGift.slice(1);

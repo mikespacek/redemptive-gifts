@@ -49,9 +49,29 @@ export async function sendResultToGoogleSheet(result: TestResult): Promise<{ suc
 
     console.log('Sending data to Google Sheet URL:', GOOGLE_SHEET_URL);
 
+    // Format date in 12-hour format: MM/DD/YYYY hh:mm:ss AM/PM
+    const formatDate = (date: Date | number): string => {
+      const d = new Date(date);
+
+      // Format date as MM/DD/YYYY
+      const month = (d.getMonth() + 1).toString().padStart(2, '0');
+      const day = d.getDate().toString().padStart(2, '0');
+      const year = d.getFullYear();
+
+      // Format time in 12-hour format with AM/PM
+      let hours = d.getHours();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      const minutes = d.getMinutes().toString().padStart(2, '0');
+      const seconds = d.getSeconds().toString().padStart(2, '0');
+
+      return `${month}/${day}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+    };
+
     // Format the data for Google Sheets - use the actual gift scores
     const formattedData = {
-      timestamp: new Date(result.timestamp).toISOString(),
+      timestamp: formatDate(result.timestamp),
       userId: result.userId,
       fullName: result.fullName || 'Anonymous',
       email: result.email || 'Not provided',
