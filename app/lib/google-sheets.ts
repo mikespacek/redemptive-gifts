@@ -49,7 +49,7 @@ export async function sendResultToGoogleSheet(result: TestResult): Promise<{ suc
 
     console.log('Sending data to Google Sheet URL:', GOOGLE_SHEET_URL);
 
-    // Format date in 12-hour format: MM/DD/YYYY hh:mm:ss AM/PM
+    // Format date in 24-hour format: YYYY-MM-DD HH:MM:SS
     const formatDate = (date: Date | number): string => {
       try {
         const d = new Date(date);
@@ -62,34 +62,20 @@ export async function sendResultToGoogleSheet(result: TestResult): Promise<{ suc
           return formatDate(now);
         }
 
-        // Format date as MM/DD/YYYY
+        // Format date as YYYY-MM-DD HH:MM:SS
+        const year = d.getFullYear();
         const month = (d.getMonth() + 1).toString().padStart(2, '0');
         const day = d.getDate().toString().padStart(2, '0');
-        const year = d.getFullYear();
-
-        // Format time in 12-hour format with AM/PM
-        let hours = d.getHours();
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
+        const hours = d.getHours().toString().padStart(2, '0');
         const minutes = d.getMinutes().toString().padStart(2, '0');
         const seconds = d.getSeconds().toString().padStart(2, '0');
 
-        return `${month}/${day}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
       } catch (error) {
         console.error('Error formatting date:', error);
         // Return current date as fallback
         const now = new Date();
-        const month = (now.getMonth() + 1).toString().padStart(2, '0');
-        const day = now.getDate().toString().padStart(2, '0');
-        const year = now.getFullYear();
-        let hours = now.getHours();
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        const seconds = now.getSeconds().toString().padStart(2, '0');
-        return `${month}/${day}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+        return now.toISOString().replace('T', ' ').substring(0, 19);
       }
     };
 
