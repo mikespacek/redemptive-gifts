@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Design Test Results</title>
+  <style>
+    /* Base styles */
+    body {
+      font-family: 'Poppins', Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 20px 0;
+      border-bottom: 2px solid #F3762F;
+    }
+    
+    .header h1 {
+      color: #181818;
+      margin: 0;
+      font-size: 28px;
+    }
+    
+    /* Content sections */
+    .section {
+      margin: 25px 0;
+      padding: 0 15px;
+    }
+    
+    .section-title {
+      color: #F3762F;
+      font-size: 20px;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 5px;
+    }
+    
+    /* Gift profile */
+    .gift-profile {
+      background-color: #f8f8f8;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+    
+    .gift-name {
+      font-size: 22px;
+      color: #181818;
+      margin: 0 0 10px 0;
+    }
+    
+    .gift-summary {
+      font-style: italic;
+      margin-bottom: 15px;
+    }
+    
+    /* Lists */
+    .list-title {
+      font-weight: bold;
+      margin: 15px 0 5px 0;
+      color: #181818;
+    }
+    
+    ul {
+      margin: 0;
+      padding: 0 0 0 20px;
+    }
+    
+    li {
+      margin-bottom: 5px;
+    }
+    
+    /* Scores table */
+    .scores-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    
+    .scores-table th {
+      background-color: #181818;
+      color: white;
+      text-align: left;
+      padding: 10px;
+    }
+    
+    .scores-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    
+    .scores-table tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      color: #777;
+      font-size: 14px;
+    }
+    
+    /* Responsive */
+    @media only screen and (max-width: 600px) {
+      .container {
+        width: 100%;
+        border-radius: 0;
+      }
+      
+      .header h1 {
+        font-size: 24px;
+      }
+      
+      .section {
+        padding: 0 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Your Design Test Results</h1>
+    </div>
+    
+    <div class="section">
+      <p>Hello {{user_name}},</p>
+      <p>Thank you for completing the Your Design test. Here are your results:</p>
+    </div>
+    
+    <div class="section">
+      <h2 class="section-title">Your Gift Profile</h2>
+      <div class="gift-profile">
+        <h3 class="gift-name">Dominant Gift: {{dominant_gift}}</h3>
+        <p class="gift-summary">{{summary}}</p>
+        
+        <p class="list-title">Principle:</p>
+        <p>{{principle}}</p>
+        
+        <p class="list-title">Strengths:</p>
+        <p style="white-space: pre-line;">{{strengths}}</p>
+        
+        <p class="list-title">Challenges:</p>
+        <p style="white-space: pre-line;">{{challenges}}</p>
+      </div>
+      
+      <p><strong>Secondary Gift:</strong> {{secondary_gift}}</p>
+    </div>
+    
+    <div class="section">
+      <h2 class="section-title">Your Scores</h2>
+      <table class="scores-table">
+        <tr>
+          <th>Gift</th>
+          <th>Score</th>
+        </tr>
+        <tr>
+          <td>Teacher</td>
+          <td>{{column_t}}</td>
+        </tr>
+        <tr>
+          <td>Giver</td>
+          <td>{{column_g}}</td>
+        </tr>
+        <tr>
+          <td>Ruler</td>
+          <td>{{column_r}}</td>
+        </tr>
+        <tr>
+          <td>Exhorter</td>
+          <td>{{column_e}}</td>
+        </tr>
+        <tr>
+          <td>Mercy</td>
+          <td>{{column_m}}</td>
+        </tr>
+        <tr>
+          <td>Prophet</td>
+          <td>{{column_p}}</td>
+        </tr>
+        <tr>
+          <td>Servant</td>
+          <td>{{column_s}}</td>
+        </tr>
+      </table>
+    </div>
+    
+    <div class="section">
+      <h2 class="section-title">Additional Information</h2>
+      <p><strong>Mature Gift:</strong> {{mature_gift}}</p>
+      <p><strong>Carnal Gift:</strong> {{carnal_gift}}</p>
+      <p><strong>Battlefield:</strong> {{battlefield}}</p>
+      <p><strong>Legitimacy Lie:</strong> {{legitimacy_lie}}</p>
+      <p><strong>Biblical Example:</strong> {{biblical_example}}</p>
+      <p><strong>Birthright:</strong> {{birthright}}</p>
+    </div>
+    
+    <div class="footer">
+      <p>Test completed on: {{test_date}}</p>
+      <p>Email: {{user_email}}</p>
+      <p>This email was sent from <a href="{{app_url}}">Your Design</a></p>
+    </div>
+  </div>
+</body>
+</html>

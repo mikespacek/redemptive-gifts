@@ -124,8 +124,8 @@ export async function testEmailJSConfig(): Promise<{ success: boolean; message: 
       // Gift profile details
       principle: 'Test Principle - Design is the foundation of all creation',
       summary: 'Test Summary - This is a sample summary of the gift description that would appear in the results',
-      strengths: '<li>Ability to see root causes</li><li>Strong sense of justice</li><li>Passionate about truth</li>',
-      challenges: '<li>Can be overly critical</li><li>May struggle with patience</li><li>Sometimes too direct</li>',
+      strengths: '• Ability to see root causes\n• Strong sense of justice\n• Passionate about truth',
+      challenges: '• Can be overly critical\n• May struggle with patience\n• Sometimes too direct',
       mature_gift: 'Test Mature Gift - When mature, this gift brings clarity and wisdom to situations',
       carnal_gift: 'Test Carnal Gift - When immature, this gift can manifest as judgment and criticism',
       battlefield: 'Test Battlefield - The primary area of spiritual warfare is the mind',
@@ -215,14 +215,14 @@ export async function sendResultsEmailJS(result: TestResult): Promise<{ success:
     // Get the dominant gift type and prepare gift profile data
     const dominantGiftType = result.dominantGift as keyof typeof giftDescriptions;
 
-    // Format strengths and challenges as HTML list items
+    // Format strengths and challenges as plain text with bullet points
     const strengths = giftDescriptions[dominantGiftType].strengths
-      .map(s => `<li>${s}</li>`)
-      .join('');
+      .map(s => `• ${s}`)
+      .join('\n');
 
     const challenges = giftDescriptions[dominantGiftType].challenges
-      .map(c => `<li>${c}</li>`)
-      .join('');
+      .map(c => `• ${c}`)
+      .join('\n');
 
     // Get the application URL from environment or use a default
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://your-design.unionhouston.com';
@@ -264,8 +264,8 @@ export async function sendResultsEmailJS(result: TestResult): Promise<{ success:
     const capitalizedDominantGift = result.dominantGift.charAt(0).toUpperCase() + result.dominantGift.slice(1);
     const capitalizedSecondaryGift = result.secondaryGift.charAt(0).toUpperCase() + result.secondaryGift.slice(1);
 
-    // Extract first name for personalization
-    const firstName = result.firstName || result.fullName?.split(' ')[0] || 'Friend';
+    // Use full name for personalization
+    const userName = result.fullName || 'Friend';
 
     // Prepare template parameters
     const templateParams = {
@@ -273,7 +273,7 @@ export async function sendResultsEmailJS(result: TestResult): Promise<{ success:
       to_email: ADMIN_EMAIL,
       from_name: 'Your Design',
       subject: `Your Design Test Result - ${result.fullName || 'Anonymous User'}`,
-      user_name: firstName,
+      user_name: userName,
       user_email: result.email || 'Not provided',
       test_date: testDate,
       app_url: appUrl,
