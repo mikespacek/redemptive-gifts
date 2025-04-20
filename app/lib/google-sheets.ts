@@ -92,43 +92,66 @@ export async function sendResultToGoogleSheet(result: TestResult): Promise<{ suc
 
     console.log('Formatted data for Google Sheet:', formattedData);
 
-    // Use form submission approach which is more reliable for Google Sheets
-    console.log('Sending data to Google Sheet using form submission');
+    // Use fetch API to send data directly to Google Sheets
+    console.log('Sending data to Google Sheet using fetch API');
 
-    // Create a hidden iframe for submission
-    const iframe = document.createElement('iframe');
-    iframe.name = 'hidden_iframe';
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
+    try {
+      // First, try using fetch with JSON
+      const response = await fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formattedData),
+      });
 
-    // Create a form element to submit the data
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = GOOGLE_SHEET_URL;
-    form.target = 'hidden_iframe'; // Target the hidden iframe
+      const responseData = await response.text();
+      console.log('Fetch response:', responseData);
 
-    // Create a hidden input field for the data
-    const hiddenField = document.createElement('input');
-    hiddenField.type = 'hidden';
-    hiddenField.name = 'data';
-    hiddenField.value = JSON.stringify(formattedData);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
 
-    // Add the field to the form
-    form.appendChild(hiddenField);
+      console.log('Data sent successfully via fetch API');
+    } catch (fetchError) {
+      console.error('Fetch error:', fetchError);
+      console.log('Falling back to form submission method...');
 
-    // Add the form to the document body
-    document.body.appendChild(form);
+      // Create a hidden iframe for submission
+      const iframe = document.createElement('iframe');
+      iframe.name = 'hidden_iframe';
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
 
-    // Submit the form
-    form.submit();
+      // Create a form element to submit the data
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = GOOGLE_SHEET_URL;
+      form.target = 'hidden_iframe'; // Target the hidden iframe
 
-    // Remove the form from the document after a short delay
-    setTimeout(() => {
-      document.body.removeChild(form);
-      document.body.removeChild(iframe);
-    }, 1000);
+      // Create a hidden input field for the data
+      const hiddenField = document.createElement('input');
+      hiddenField.type = 'hidden';
+      hiddenField.name = 'data';
+      hiddenField.value = JSON.stringify(formattedData);
 
-    console.log('Form submission completed');
+      // Add the field to the form
+      form.appendChild(hiddenField);
+
+      // Add the form to the document body
+      document.body.appendChild(form);
+
+      // Submit the form
+      form.submit();
+
+      // Remove the form from the document after a short delay
+      setTimeout(() => {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+      }, 1000);
+
+      console.log('Form submission completed as fallback');
+    }
 
     // Store the result in localStorage for local access
     localStorage.setItem('testResults', JSON.stringify(result));
