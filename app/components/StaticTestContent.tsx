@@ -11,8 +11,6 @@ import { getUserId, storeUserInfo, extractFirstName, getUserInfo, clearUserInfo,
 import { questions, giftTypeMapping } from '../data/redemptiveGiftsQuestions';
 import { sendResultToGoogleSheet } from '../lib/google-sheets';
 import { sendResultsEmailJS } from '../lib/emailjs';
-import { sendToGoogleSheets } from '../lib/google-sheets-direct';
-import { sendEmailDirect } from '../lib/emailjs-direct';
 import MissedQuestionsAlert from './MissedQuestionsAlert';
 
 export default function StaticTestContent() {
@@ -204,70 +202,37 @@ export default function StaticTestContent() {
 
       console.log('Test results stored in localStorage with keys: redemptiveGiftsTestResults and testResults');
 
-      // Send results to Google Sheet and email using both original and direct methods
+      // Send results to Google Sheet and email
       try {
         // Only send to Google Sheets if we have user info
         if (userInfo?.fullName && userInfo?.email) {
           console.log('Attempting to send results to Google Sheet...');
+          try {
+            const sheetResult = await sendResultToGoogleSheet(results);
+            console.log('Google Sheet result:', sheetResult);
 
-          // Try both Google Sheets methods in parallel
-          const googleSheetsPromises = [
-            // Original method
-            sendResultToGoogleSheet(results).catch(error => {
-              console.error('Original Google Sheets method failed:', error);
-              return { success: false, message: 'Original method failed' };
-            }),
-
-            // Direct method
-            sendToGoogleSheets(results).catch(error => {
-              console.error('Direct Google Sheets method failed:', error);
-              return { success: false, message: 'Direct method failed' };
-            })
-          ];
-
-          // Wait for both to complete
-          const [originalResult, directResult] = await Promise.all(googleSheetsPromises);
-
-          console.log('Google Sheets results:', {
-            originalMethod: originalResult,
-            directMethod: directResult
-          });
-
-          if (originalResult.success || directResult.success) {
-            console.log('Results sent to Google Sheet successfully');
-          } else {
-            console.warn('Both Google Sheet submission methods failed');
+            if (sheetResult.success) {
+              console.log('Results sent to Google Sheet successfully');
+            } else {
+              console.warn('Google Sheet submission returned error:', sheetResult.message);
+            }
+          } catch (sheetError) {
+            console.error('Error sending to Google Sheet:', sheetError);
+            // Continue with the test - don't block the user from seeing results
           }
 
-          // Send email to admin using both EmailJS methods in parallel
-          console.log('Sending email notification to admin...');
+          // Send email to admin using EmailJS
+          console.log('Sending email notification to admin using EmailJS...');
+          try {
+            const emailResult = await sendResultsEmailJS(results);
+            console.log('EmailJS result:', emailResult);
 
-          const emailPromises = [
-            // Original method
-            sendResultsEmailJS(results).catch(error => {
-              console.error('Original EmailJS method failed:', error);
-              return { success: false, message: 'Original method failed' };
-            }),
-
-            // Direct method
-            sendEmailDirect(results).catch(error => {
-              console.error('Direct EmailJS method failed:', error);
-              return { success: false, message: 'Direct method failed' };
-            })
-          ];
-
-          // Wait for both to complete
-          const [originalEmailResult, directEmailResult] = await Promise.all(emailPromises);
-
-          console.log('EmailJS results:', {
-            originalMethod: originalEmailResult,
-            directMethod: directEmailResult
-          });
-
-          if (originalEmailResult.success || directEmailResult.success) {
-            console.log('Email sent successfully');
-          } else {
-            console.warn('Both EmailJS methods failed');
+            if (!emailResult.success) {
+              console.error('EmailJS failed:', emailResult.message);
+            }
+          } catch (emailError) {
+            console.error('Error sending email with EmailJS:', emailError);
+            // Continue with the test - don't block the user from seeing results
           }
         } else {
           console.log('Not sending to Google Sheet or email - missing user info');

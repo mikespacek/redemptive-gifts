@@ -328,43 +328,15 @@ export async function sendResultsEmailJS(result: TestResult): Promise<{ success:
 
     // Initialize EmailJS with your public key
     console.log('Initializing EmailJS with public key...');
-    try {
-      // Check if EmailJS is already initialized
-      if (typeof (emailjs as any)._initialized === 'undefined' || !(emailjs as any)._initialized) {
-        emailjs.init(EMAILJS_PUBLIC_KEY);
-        console.log('EmailJS initialized successfully');
-      } else {
-        console.log('EmailJS already initialized');
-      }
-    } catch (initError) {
-      console.error('Error initializing EmailJS:', initError);
-      throw new Error(`EmailJS initialization failed: ${initError instanceof Error ? initError.message : String(initError)}`);
-    }
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+    console.log('EmailJS initialized successfully');
 
-    // Send the email with retry logic
-    let retries = 2;
-    let response;
-
-    while (retries >= 0) {
-      try {
-        response = await emailjs.send(
-          EMAILJS_SERVICE_ID,
-          EMAILJS_TEMPLATE_ID,
-          templateParams
-        );
-        break; // Success, exit the loop
-      } catch (sendError) {
-        if (retries > 0) {
-          console.log(`EmailJS send failed, retrying... (${retries} attempts left)`);
-          retries--;
-          // Wait a bit before retrying
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        } else {
-          // No more retries, rethrow the error
-          throw sendError;
-        }
-      }
-    }
+    // Send the email
+    const response = await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_ID,
+      templateParams
+    );
 
     console.log('EmailJS SUCCESS:', response);
     return { success: true, message: "Email sent successfully" };
