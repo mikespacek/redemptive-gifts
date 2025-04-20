@@ -134,119 +134,119 @@ export default function StaticTestContent() {
       setIsLoading(true);
       console.log('Starting test completion process...');
 
-    // Calculate results based on answers
-    const scores: Record<string, number> = {
-      prophet: 0,
-      servant: 0,
-      teacher: 0,
-      exhorter: 0,
-      giver: 0,
-      ruler: 0,
-      mercy: 0
-    };
+      // Calculate results based on answers
+      const scores: Record<string, number> = {
+        prophet: 0,
+        servant: 0,
+        teacher: 0,
+        exhorter: 0,
+        giver: 0,
+        ruler: 0,
+        mercy: 0
+      };
 
-    // Sum up scores by gift type
-    Object.values(answers).forEach(answer => {
-      scores[answer.giftType] += answer.score;
-    });
+      // Sum up scores by gift type
+      Object.values(answers).forEach(answer => {
+        scores[answer.giftType] += answer.score;
+      });
 
-    // Find dominant and secondary gifts
-    let dominantGift = "prophet";
-    let secondaryGift = "prophet";
-    let highestScore = 0;
-    let secondHighestScore = 0;
+      // Find dominant and secondary gifts
+      let dominantGift = "prophet";
+      let secondaryGift = "prophet";
+      let highestScore = 0;
+      let secondHighestScore = 0;
 
-    Object.entries(scores).forEach(([gift, score]) => {
-      if (score > highestScore) {
-        secondHighestScore = highestScore;
-        secondaryGift = dominantGift;
-        highestScore = score;
-        dominantGift = gift;
-      } else if (score > secondHighestScore) {
-        secondHighestScore = score;
-        secondaryGift = gift;
-      }
-    });
-
-    // Log the calculated scores for debugging
-    console.log('Calculated gift scores:', scores);
-
-    // Store results in localStorage with detailed scores for each gift type
-    const results = {
-      userId,
-      scores,
-      dominantGift,
-      secondaryGift,
-      timestamp: Date.now(),
-      fullName: userInfo?.fullName,
-      email: userInfo?.email,
-      firstName: userInfo?.firstName,
-      // Add detailed breakdown by column for the results sheet (for backward compatibility)
-      columnScores: {
-        T: scores.teacher,  // Column 1
-        G: scores.giver,    // Column 2
-        R: scores.ruler,    // Column 3
-        E: scores.exhorter, // Column 4
-        M: scores.mercy,    // Column 5
-        P: scores.prophet,  // Column 6
-        S: scores.servant   // Column 7
-      }
-    };
-
-    console.log('Test results object:', results);
-
-    // Store results with a more reliable key that includes the user ID
-    localStorage.setItem('redemptiveGiftsTestResults', JSON.stringify(results));
-    // Also store with the old key for backward compatibility
-    localStorage.setItem('testResults', JSON.stringify(results));
-
-    console.log('Test results stored in localStorage with keys: redemptiveGiftsTestResults and testResults');
-
-    // Send results to Google Sheet and email
-    try {
-      // Only send to Google Sheets if we have user info
-      if (userInfo?.fullName && userInfo?.email) {
-        console.log('Attempting to send results to Google Sheet...');
-        try {
-          const sheetResult = await sendResultToGoogleSheet(results);
-          console.log('Google Sheet result:', sheetResult);
-
-          if (sheetResult.success) {
-            console.log('Results sent to Google Sheet successfully');
-          } else {
-            console.warn('Google Sheet submission returned error:', sheetResult.message);
-          }
-        } catch (sheetError) {
-          console.error('Error sending to Google Sheet:', sheetError);
-          // Continue with the test - don't block the user from seeing results
+      Object.entries(scores).forEach(([gift, score]) => {
+        if (score > highestScore) {
+          secondHighestScore = highestScore;
+          secondaryGift = dominantGift;
+          highestScore = score;
+          dominantGift = gift;
+        } else if (score > secondHighestScore) {
+          secondHighestScore = score;
+          secondaryGift = gift;
         }
+      });
 
-        // Send email to admin using EmailJS
-        console.log('Sending email notification to admin using EmailJS...');
-        try {
-          const emailResult = await sendResultsEmailJS(results);
-          console.log('EmailJS result:', emailResult);
+      // Log the calculated scores for debugging
+      console.log('Calculated gift scores:', scores);
 
-          if (!emailResult.success) {
-            console.error('EmailJS failed:', emailResult.message);
-          }
-        } catch (emailError) {
-          console.error('Error sending email with EmailJS:', emailError);
-          // Continue with the test - don't block the user from seeing results
+      // Store results in localStorage with detailed scores for each gift type
+      const results = {
+        userId,
+        scores,
+        dominantGift,
+        secondaryGift,
+        timestamp: Date.now(),
+        fullName: userInfo?.fullName,
+        email: userInfo?.email,
+        firstName: userInfo?.firstName,
+        // Add detailed breakdown by column for the results sheet (for backward compatibility)
+        columnScores: {
+          T: scores.teacher,  // Column 1
+          G: scores.giver,    // Column 2
+          R: scores.ruler,    // Column 3
+          E: scores.exhorter, // Column 4
+          M: scores.mercy,    // Column 5
+          P: scores.prophet,  // Column 6
+          S: scores.servant   // Column 7
         }
-      } else {
-        console.log('Not sending to Google Sheet or email - missing user info');
+      };
+
+      console.log('Test results object:', results);
+
+      // Store results with a more reliable key that includes the user ID
+      localStorage.setItem('redemptiveGiftsTestResults', JSON.stringify(results));
+      // Also store with the old key for backward compatibility
+      localStorage.setItem('testResults', JSON.stringify(results));
+
+      console.log('Test results stored in localStorage with keys: redemptiveGiftsTestResults and testResults');
+
+      // Send results to Google Sheet and email
+      try {
+        // Only send to Google Sheets if we have user info
+        if (userInfo?.fullName && userInfo?.email) {
+          console.log('Attempting to send results to Google Sheet...');
+          try {
+            const sheetResult = await sendResultToGoogleSheet(results);
+            console.log('Google Sheet result:', sheetResult);
+
+            if (sheetResult.success) {
+              console.log('Results sent to Google Sheet successfully');
+            } else {
+              console.warn('Google Sheet submission returned error:', sheetResult.message);
+            }
+          } catch (sheetError) {
+            console.error('Error sending to Google Sheet:', sheetError);
+            // Continue with the test - don't block the user from seeing results
+          }
+
+          // Send email to admin using EmailJS
+          console.log('Sending email notification to admin using EmailJS...');
+          try {
+            const emailResult = await sendResultsEmailJS(results);
+            console.log('EmailJS result:', emailResult);
+
+            if (!emailResult.success) {
+              console.error('EmailJS failed:', emailResult.message);
+            }
+          } catch (emailError) {
+            console.error('Error sending email with EmailJS:', emailError);
+            // Continue with the test - don't block the user from seeing results
+          }
+        } else {
+          console.log('Not sending to Google Sheet or email - missing user info');
+        }
+      } catch (error) {
+        console.error('Error in submission process:', error);
+        // Continue anyway - we don't want to block the user from seeing their results
+      } finally {
+        // Make sure we always set loading to false and navigate to results
+        setIsLoading(false);
+        console.log('Navigating to results page...');
+        // Navigate to results page
+        router.push('/results');
       }
-    } catch (error) {
-      console.error('Error in submission process:', error);
-      // Continue anyway - we don't want to block the user from seeing their results
-    } finally {
-      // Make sure we always set loading to false and navigate to results
-      setIsLoading(false);
-      console.log('Navigating to results page...');
-      // Navigate to results page
-      router.push('/results');
-    }
     } catch (finalError) {
       console.error('Critical error in test completion:', finalError);
       setIsLoading(false);
