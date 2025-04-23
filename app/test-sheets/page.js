@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { testGoogleSheetsConnection } from '../lib/google-sheets';
+import { testGoogleSheetsConnection } from '../lib/google-sheets-simple-test';
 import PageLayout from '../components/PageLayout';
 
 export default function TestGoogleSheetsPage() {

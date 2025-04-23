@@ -9,8 +9,8 @@ import ProgressBar from './ProgressBar';
 import UserInfoForm from './UserInfoForm';
 import { getUserId, storeUserInfo, extractFirstName, getUserInfo, clearUserInfo, UserInfo } from '../lib/userId';
 import { questions, giftTypeMapping } from '../data/redemptiveGiftsQuestions';
-import { sendResultToGoogleSheet } from '../lib/google-sheets';
-import { sendResultsEmailJS } from '../lib/emailjs';
+import { sendResultToGoogleSheet } from '../lib/google-sheets-simple';
+import { sendResultsEmailJS } from '../lib/emailjs-simple';
 import MissedQuestionsAlert from './MissedQuestionsAlert';
 
 export default function StaticTestContent() {
