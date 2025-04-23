@@ -20,7 +20,7 @@ export default function AboutPage() {
               <h2>What are Redemptive Gifts?</h2>
               <p>
                 The concept of Redemptive Gifts is based on Romans 12:6-8, which describes seven
-                spiritual gifts: prophecy, serving, teaching, exhortation, giving, leadership, and mercy.
+                redemptive gifts: prophecy, serving, teaching, exhortation, giving, leadership, and mercy.
                 Arthur Burk has expanded on this biblical foundation to provide deep insights into how
                 these gifts shape human personality, motivation, and purpose.
               </p>

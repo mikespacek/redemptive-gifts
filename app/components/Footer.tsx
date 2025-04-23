@@ -10,7 +10,7 @@ const Footer = () => {
           <div>
             <h3 className="text-xl font-semibold mb-5 text-white">Your Design</h3>
             <p className="text-gray-400 leading-relaxed">
-              Discover your dominant spiritual gift and understand how you're uniquely designed to impact the world.
+              Discover your dominant redemptive gift and understand how you're uniquely designed to impact the world.
             </p>
           </div>
 
@@ -42,7 +42,7 @@ const Footer = () => {
           <div>
             <h3 className="text-xl font-semibold mb-5 text-white">About</h3>
             <p className="text-gray-400 leading-relaxed">
-              This test is based on the spiritual gifts from Romans 12:6-8. It helps identify your primary spiritual design and gifting.
+              This test is based on the redemptive gifts from Romans 12:6-8. It helps identify your primary redemptive design and gifting.
             </p>
           </div>
         </div>

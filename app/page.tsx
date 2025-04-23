@@ -27,7 +27,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              This test helps you identify your dominant spiritual design and understand
+              This test helps you identify your dominant redemptive gift and understand
               how you're uniquely created to impact the world.
             </motion.p>
 
@@ -61,9 +61,9 @@ export default function Home() {
       {/* About Section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-6 sm:px-10 lg:px-16 py-6 max-w-6xl">
-          <h2 className="text-3xl font-bold text-center text-[#181818]">What Are Spiritual Gifts?</h2>
+          <h2 className="text-3xl font-bold text-center text-[#181818]">What Are Redemptive Gifts?</h2>
           <p className="mt-4 text-lg text-center text-gray-700 max-w-3xl mx-auto">
-            Spiritual gifts are based on Romans 12:6-8 and describe seven gift types that
+            Redemptive gifts are based on Romans 12:6-8 and describe seven gift types that
             reflect different aspects of God's nature. These gifts influence how you see the world,
             process information, and interact with others.
           </p>
@@ -110,7 +110,7 @@ export default function Home() {
               </div>
               <h3 className="mt-4 text-xl font-semibold text-white">Take the Test</h3>
               <p className="mt-2 text-gray-300">
-                Complete 91 questions using a scoring system of 1, 2, 4, or 5 to identify your spiritual gifts.
+                Complete 91 questions using a scoring system of 1, 2, 4, or 5 to identify your redemptive gifts.
               </p>
             </motion.div>
 
