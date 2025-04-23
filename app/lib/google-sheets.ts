@@ -125,79 +125,72 @@ export async function sendResultToGoogleSheet(result: TestResult): Promise<{ suc
     // Use fetch API to send data directly to Google Sheets
     console.log('Sending data to Google Sheet using fetch API');
 
+    // Skip fetch API attempt and go straight to form submission which is more reliable
+    console.log('Using form submission method for Google Sheets...');
+
     try {
-      // First, try using fetch with JSON
-      console.log('Attempting to send data with fetch API...');
-      const response = await fetch(GOOGLE_SHEET_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formattedData),
-        mode: 'no-cors', // Add no-cors mode to handle CORS issues
+      // Create a hidden iframe for form target
+      const iframeId = 'google-sheets-iframe';
+      let iframe = document.getElementById(iframeId) as HTMLIFrameElement;
+
+      if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.id = iframeId;
+        iframe.name = iframeId;
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+      }
+
+      // Create a form element to submit the data
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = GOOGLE_SHEET_URL;
+      form.target = iframeId; // Target the hidden iframe
+      form.style.display = 'none';
+
+      // Create a single hidden input with all data as JSON
+      const jsonField = document.createElement('input');
+      jsonField.type = 'hidden';
+      jsonField.name = 'data';
+      jsonField.value = JSON.stringify(formattedData);
+      form.appendChild(jsonField);
+
+      // Also add each field individually as a fallback
+      Object.entries(formattedData).forEach(([key, value]) => {
+        const field = document.createElement('input');
+        field.type = 'hidden';
+        field.name = key;
+        field.value = String(value);
+        form.appendChild(field);
       });
 
-      // With no-cors, we can't read the response, but we can assume it worked if no error was thrown
-      console.log('Fetch request completed without errors');
-      console.log('Data sent successfully via fetch API');
+      // Add the form to the document body
+      document.body.appendChild(form);
+
+      // Submit the form
+      console.log('Submitting form to Google Sheets...');
+      form.submit();
+
+      // Remove the form after submission (but keep the iframe)
+      setTimeout(() => {
+        if (document.body.contains(form)) {
+          document.body.removeChild(form);
+        }
+      }, 2000);
+
+      console.log('Form submission completed');
 
       // Store the result in localStorage for local access
       localStorage.setItem('testResults', JSON.stringify(result));
 
       return { success: true, message: 'Results submitted to Google Sheet' };
-    } catch (fetchError) {
-      console.error('Fetch error:', fetchError);
-      console.log('Falling back to form submission method...');
-
-      // Use a more reliable form submission approach
-      console.log('Creating form for submission...');
-
-      try {
-        // Create a form element to submit the data
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = GOOGLE_SHEET_URL;
-        form.style.display = 'none';
-
-        // Add each field individually for better compatibility
-        Object.entries(formattedData).forEach(([key, value]) => {
-          const field = document.createElement('input');
-          field.type = 'hidden';
-          field.name = key;
-          field.value = String(value);
-          form.appendChild(field);
-        });
-
-        // Add the form to the document body
-        document.body.appendChild(form);
-
-        // Submit the form
-        console.log('Submitting form...');
-        form.submit();
-
-        // Remove the form after submission
-        setTimeout(() => {
-          if (document.body.contains(form)) {
-            document.body.removeChild(form);
-          }
-        }, 2000);
-
-        console.log('Form submission completed as fallback');
-
-        // Store the result in localStorage for local access
-        localStorage.setItem('testResults', JSON.stringify(result));
-
-        return { success: true, message: 'Results submitted to Google Sheet via form' };
-      } catch (formError) {
-        console.error('Form submission error:', formError);
-        return {
-          success: false,
-          message: 'Failed to submit results to Google Sheet: ' + (formError as Error).message
-        };
-      }
+    } catch (formError) {
+      console.error('Form submission error:', formError);
+      return {
+        success: false,
+        message: 'Error submitting to Google Sheet: ' + (formError as Error).message
+      };
     }
-
-
   } catch (error) {
     console.error('Error sending results to Google Sheet:', error);
     return {
