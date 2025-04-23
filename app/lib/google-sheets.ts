@@ -279,24 +279,24 @@ export async function sendResultToGoogleSheet(
       await new Promise(resolve => setTimeout(resolve, waitTime));
     }
   }
-  // If we've exhausted all retries and still failed
-  console.error(`Failed to submit to Google Sheets after ${maxRetries + 1} attempts`);
+    // If we've exhausted all retries and still failed
+    console.error(`Failed to submit to Google Sheets after ${maxRetries + 1} attempts`);
 
-  // Store the failed submission for potential recovery later
-  try {
-    const pendingSubmission = JSON.parse(localStorage.getItem('pendingGoogleSheetsSubmission') || '{}');
-    pendingSubmission.attempts = (pendingSubmission.attempts || 0) + 1;
-    pendingSubmission.lastAttempt = Date.now();
-    pendingSubmission.lastError = lastError ? (lastError as Error).message : 'Unknown error';
-    localStorage.setItem('pendingGoogleSheetsSubmission', JSON.stringify(pendingSubmission));
-  } catch (e) {
-    console.warn('Could not update pending submission in localStorage:', e);
-  }
+    // Store the failed submission for potential recovery later
+    try {
+      const pendingSubmission = JSON.parse(localStorage.getItem('pendingGoogleSheetsSubmission') || '{}');
+      pendingSubmission.attempts = (pendingSubmission.attempts || 0) + 1;
+      pendingSubmission.lastAttempt = Date.now();
+      pendingSubmission.lastError = lastError ? (lastError as Error).message : 'Unknown error';
+      localStorage.setItem('pendingGoogleSheetsSubmission', JSON.stringify(pendingSubmission));
+    } catch (e) {
+      console.warn('Could not update pending submission in localStorage:', e);
+    }
 
-  return {
-    success: false,
-    message: `Failed to submit results to Google Sheet after ${maxRetries + 1} attempts: ${lastError ? (lastError as Error).message : 'Unknown error'}`
-  };
+    return {
+      success: false,
+      message: `Failed to submit results to Google Sheet after ${maxRetries + 1} attempts: ${lastError ? (lastError as Error).message : 'Unknown error'}`
+    };
 }
 
 /**

@@ -471,6 +471,8 @@ export async function sendResultsEmailJS(
     success: false,
     message: errorMessage
   };
+}
+
 /**
  * Retry any pending EmailJS submissions that failed previously
  * This should be called when the app initializes
