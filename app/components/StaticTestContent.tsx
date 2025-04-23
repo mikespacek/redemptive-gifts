@@ -26,39 +26,65 @@ export default function StaticTestContent() {
 
   // Get/create user ID and always show the user form
   useEffect(() => {
-    // Clear any existing user info to ensure the form is shown
-    clearUserInfo();
+    try {
+      // Clear any existing user info to ensure the form is shown
+      clearUserInfo();
 
-    // Get or create a user ID for tracking purposes
-    const id = getUserId();
-    setUserId(id);
+      // Get or create a user ID for tracking purposes
+      const id = getUserId();
+      setUserId(id);
 
-    // Always show the user form
-    setShowUserForm(true);
+      // Always show the user form
+      setShowUserForm(true);
 
-    // Set loading to false after a short delay to simulate data loading
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+      // Initialize empty answers object
+      setAnswers({});
+
+      // Reset current question index
+      setCurrentQuestionIndex(0);
+
+      console.log('Test initialized with user ID:', id);
+    } catch (error) {
+      console.error('Error initializing test:', error);
+    } finally {
+      // Set loading to false after a short delay to simulate data loading
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
+    }
   }, []);
 
   // Handler for when a question is answered
   const handleAnswer = (questionId: string, giftType: string, score: number) => {
-    console.log('Answer selected:', { questionId, giftType, score });
+    try {
+      console.log('Answer selected:', { questionId, giftType, score });
 
-    // Update local state
-    setAnswers((prev) => ({
-      ...prev,
-      [questionId]: { giftType, score },
-    }));
+      // Update local state with the new answer
+      setAnswers((prev) => {
+        const newAnswers = {
+          ...prev,
+          [questionId]: { giftType, score },
+        };
+        console.log('Updated answers:', newAnswers);
+        return newAnswers;
+      });
 
-    // Auto-advance to next question after a short delay
-    if (currentQuestionIndex < totalQuestions - 1) {
-      // Use a timeout to give visual feedback that the selection was registered
-      setTimeout(() => {
-        // Use functional update to avoid closure issues with stale state
-        setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-      }, 300);
+      // Auto-advance to next question after a short delay
+      if (currentQuestionIndex < totalQuestions - 1) {
+        // Use a timeout to give visual feedback that the selection was registered
+        setTimeout(() => {
+          // Use functional update to avoid closure issues with stale state
+          setCurrentQuestionIndex(prevIndex => {
+            const newIndex = prevIndex + 1;
+            console.log(`Moving to question ${newIndex + 1}`);
+            return newIndex;
+          });
+        }, 300);
+      } else {
+        console.log('Reached the last question');
+      }
+    } catch (error) {
+      console.error('Error handling answer selection:', error);
     }
   };
 
@@ -78,18 +104,32 @@ export default function StaticTestContent() {
 
   // Handle user info form submission
   const handleUserInfoSubmit = (fullName: string, email: string) => {
-    const firstName = extractFirstName(fullName);
-    const newUserInfo = {
-      userId,
-      fullName,
-      email,
-      firstName
-    };
+    try {
+      console.log('User info submitted:', { fullName, email });
 
-    // Store user info
-    storeUserInfo(newUserInfo);
-    setUserInfo(newUserInfo);
-    setShowUserForm(false);
+      const firstName = extractFirstName(fullName);
+      const newUserInfo = {
+        userId,
+        fullName,
+        email,
+        firstName
+      };
+
+      // Store user info
+      storeUserInfo(newUserInfo);
+      setUserInfo(newUserInfo);
+
+      // Reset answers and current question index
+      setAnswers({});
+      setCurrentQuestionIndex(0);
+
+      // Hide the user form and show the questions
+      setShowUserForm(false);
+
+      console.log('Test started for user:', firstName);
+    } catch (error) {
+      console.error('Error handling user info submission:', error);
+    }
   };
 
   // Function to check for missed questions
@@ -122,6 +162,7 @@ export default function StaticTestContent() {
     try {
       // Check for missed questions
       const missed = checkMissedQuestions();
+      console.log('Checking for missed questions:', missed.length > 0 ? missed : 'None');
 
       if (missed.length > 0) {
         // Show alert with missed questions
@@ -145,9 +186,17 @@ export default function StaticTestContent() {
         mercy: 0
       };
 
+      // Log the answers for debugging
+      console.log('Answers to process:', answers);
+      console.log('Number of answers:', Object.keys(answers).length);
+
       // Sum up scores by gift type
       Object.values(answers).forEach(answer => {
-        scores[answer.giftType] += answer.score;
+        if (answer && answer.giftType && typeof answer.score === 'number') {
+          scores[answer.giftType] += answer.score;
+        } else {
+          console.warn('Invalid answer found:', answer);
+        }
       });
 
       // Find dominant and secondary gifts
@@ -170,6 +219,8 @@ export default function StaticTestContent() {
 
       // Log the calculated scores for debugging
       console.log('Calculated gift scores:', scores);
+      console.log('Dominant gift:', dominantGift, 'with score:', highestScore);
+      console.log('Secondary gift:', secondaryGift, 'with score:', secondHighestScore);
 
       // Store results in localStorage with detailed scores for each gift type
       const results = {
