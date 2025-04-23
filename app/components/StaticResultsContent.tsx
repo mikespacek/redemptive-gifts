@@ -272,44 +272,57 @@ export default function StaticResultsContent() {
 
         {/* Removed the Gift Scores Breakdown with colored cards */}
 
-        {/* Results Sheet Format */}
-        {result.columnScores && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.7 }}
-            className="mt-8 bg-white rounded-xl shadow-md p-6"
-          >
-            <h2 className="text-xl font-bold mb-6">Your Gift Scores</h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full border-collapse">
-                <thead>
-                  <tr>
-                    <th className="border px-4 py-2 text-center">T<br/>(Teacher)</th>
-                    <th className="border px-4 py-2 text-center">G<br/>(Giver)</th>
-                    <th className="border px-4 py-2 text-center">R<br/>(Ruler)</th>
-                    <th className="border px-4 py-2 text-center">E<br/>(Exhorter)</th>
-                    <th className="border px-4 py-2 text-center">M<br/>(Mercy)</th>
-                    <th className="border px-4 py-2 text-center">P<br/>(Prophet)</th>
-                    <th className="border px-4 py-2 text-center">S<br/>(Servant)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="border px-4 py-2 text-center font-bold">{result.columnScores.T}</td>
-                    <td className="border px-4 py-2 text-center font-bold">{result.columnScores.G}</td>
-                    <td className="border px-4 py-2 text-center font-bold">{result.columnScores.R}</td>
-                    <td className="border px-4 py-2 text-center font-bold">{result.columnScores.E}</td>
-                    <td className="border px-4 py-2 text-center font-bold">{result.columnScores.M}</td>
-                    <td className="border px-4 py-2 text-center font-bold">{result.columnScores.P}</td>
-                    <td className="border px-4 py-2 text-center font-bold">{result.columnScores.S}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <p className="mt-4 text-sm text-gray-600">Your highest score indicates your redemptive gift.</p>
-          </motion.div>
-        )}
+        {/* Results Sheet Format - Sorted from highest to lowest */}
+        {result.columnScores && (() => {
+          // Create an array of gift objects with their scores and labels
+          const giftScores = [
+            { key: 'T', label: 'Teacher', score: result.columnScores.T },
+            { key: 'G', label: 'Giver', score: result.columnScores.G },
+            { key: 'R', label: 'Ruler', score: result.columnScores.R },
+            { key: 'E', label: 'Exhorter', score: result.columnScores.E },
+            { key: 'M', label: 'Mercy', score: result.columnScores.M },
+            { key: 'P', label: 'Prophet', score: result.columnScores.P },
+            { key: 'S', label: 'Servant', score: result.columnScores.S }
+          ];
+
+          // Sort the array by score in descending order
+          const sortedGifts = [...giftScores].sort((a, b) => b.score - a.score);
+
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
+              className="mt-8 bg-white rounded-xl shadow-md p-6"
+            >
+              <h2 className="text-xl font-bold mb-6">Your Gift Scores (Highest to Lowest)</h2>
+              <div className="overflow-x-auto">
+                <table className="min-w-full border-collapse">
+                  <thead>
+                    <tr>
+                      {sortedGifts.map(gift => (
+                        <th key={gift.key} className="border px-4 py-2 text-center">
+                          {gift.key}<br/>({gift.label})
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      {sortedGifts.map(gift => (
+                        <td key={gift.key} className="border px-4 py-2 text-center font-bold">
+                          {gift.score}
+                        </td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p className="mt-4 text-sm text-gray-600">Your highest score indicates your redemptive gift.</p>
+            </motion.div>
+          );
+        })()
+        }
 
 
 
