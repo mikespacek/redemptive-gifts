@@ -6,7 +6,13 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Your Design",
-  description: "Discover your spiritual design and how you're uniquely created to impact the world",
+  description: "Discover your redemptive design and how you're uniquely created to impact the world",
+  icons: {
+    icon: "/images/union-favicon.png",
+    apple: "/images/union-favicon.png",
+  },
+  manifest: "/manifest.json",
+  themeColor: "#181818",
 };
 
 export default function RootLayout({

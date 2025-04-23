@@ -1,0 +1,14 @@
+{
+  "name": "Your Design - Redemptive Gifts Assessment",
+  "short_name": "Your Design",
+  "icons": [
+    {
+      "src": "/images/union-favicon.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#181818",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}
