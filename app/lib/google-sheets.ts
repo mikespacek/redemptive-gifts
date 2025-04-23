@@ -36,18 +36,40 @@ export interface Question {
 }
 
 /**
- * Send test results to Google Sheets
+ * Send test results to Google Sheets with retry logic and enhanced error handling
  *
  * @param result The test result to send
+ * @param maxRetries Maximum number of retry attempts (default: 3)
  * @returns A promise that resolves when the data is sent
  */
-export async function sendResultToGoogleSheet(result: TestResult): Promise<{ success: boolean; message: string }> {
+export async function sendResultToGoogleSheet(
+  result: TestResult,
+  maxRetries: number = 3
+): Promise<{ success: boolean; message: string }> {
+  // Store a backup of the result in localStorage for recovery purposes
   try {
-    // Get the Google Sheet URL from environment variables
-    const GOOGLE_SHEET_URL = process.env.NEXT_PUBLIC_GOOGLE_SHEET_URL ||
-      'https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec';
+    localStorage.setItem('lastTestResult', JSON.stringify(result));
+    localStorage.setItem('pendingGoogleSheetsSubmission', JSON.stringify({
+      result,
+      timestamp: Date.now(),
+      attempts: 0
+    }));
+    console.log('Test result saved to localStorage as backup');
+  } catch (storageError) {
+    console.warn('Could not save test result to localStorage:', storageError);
+  }
 
-    console.log('Sending data to Google Sheet URL:', GOOGLE_SHEET_URL);
+  // Implement retry logic
+  let currentRetry = 0;
+  let lastError = null;
+
+  while (currentRetry <= maxRetries) {
+    try {
+      // Get the Google Sheet URL from environment variables
+      const GOOGLE_SHEET_URL = process.env.NEXT_PUBLIC_GOOGLE_SHEET_URL ||
+        'https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec';
+
+      console.log(`Sending data to Google Sheet URL (attempt ${currentRetry + 1}/${maxRetries + 1}):`, GOOGLE_SHEET_URL);
 
     // Format date in 24-hour format: YYYY-MM-DD HH:MM:SS
     const formatDate = (date: Date | number): string => {
@@ -128,76 +150,153 @@ export async function sendResultToGoogleSheet(result: TestResult): Promise<{ suc
     // Skip fetch API attempt and go straight to form submission which is more reliable
     console.log('Using form submission method for Google Sheets...');
 
-    try {
-      // Create a hidden iframe for form target
-      const iframeId = 'google-sheets-iframe';
-      let iframe = document.getElementById(iframeId) as HTMLIFrameElement;
+    // Create a Promise to handle the form submission with a timeout
+    return new Promise((resolve) => {
+      try {
+        // Create a unique ID for this submission attempt
+        const submissionId = `submission-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
-      if (!iframe) {
-        iframe = document.createElement('iframe');
+        // Create a hidden iframe for form target
+        const iframeId = `google-sheets-iframe-${submissionId}`;
+        let iframe = document.createElement('iframe');
         iframe.id = iframeId;
         iframe.name = iframeId;
         iframe.style.display = 'none';
         document.body.appendChild(iframe);
-      }
 
-      // Create a form element to submit the data
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = GOOGLE_SHEET_URL;
-      form.target = iframeId; // Target the hidden iframe
-      form.style.display = 'none';
+        // Create a form element to submit the data
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = GOOGLE_SHEET_URL;
+        form.target = iframeId; // Target the hidden iframe
+        form.style.display = 'none';
+        form.id = `google-sheets-form-${submissionId}`;
 
-      // Create a single hidden input with all data as JSON
-      const jsonField = document.createElement('input');
-      jsonField.type = 'hidden';
-      jsonField.name = 'data';
-      jsonField.value = JSON.stringify(formattedData);
-      form.appendChild(jsonField);
+        // Add a submission ID to track this specific submission
+        const submissionIdField = document.createElement('input');
+        submissionIdField.type = 'hidden';
+        submissionIdField.name = 'submissionId';
+        submissionIdField.value = submissionId;
+        form.appendChild(submissionIdField);
 
-      // Also add each field individually as a fallback
-      Object.entries(formattedData).forEach(([key, value]) => {
-        const field = document.createElement('input');
-        field.type = 'hidden';
-        field.name = key;
-        field.value = String(value);
-        form.appendChild(field);
-      });
+        // Create a single hidden input with all data as JSON
+        const jsonField = document.createElement('input');
+        jsonField.type = 'hidden';
+        jsonField.name = 'data';
+        jsonField.value = JSON.stringify(formattedData);
+        form.appendChild(jsonField);
 
-      // Add the form to the document body
-      document.body.appendChild(form);
+        // Also add each field individually as a fallback
+        Object.entries(formattedData).forEach(([key, value]) => {
+          const field = document.createElement('input');
+          field.type = 'hidden';
+          field.name = key;
+          field.value = String(value);
+          form.appendChild(field);
+        });
 
-      // Submit the form
-      console.log('Submitting form to Google Sheets...');
-      form.submit();
+        // Add the form to the document body
+        document.body.appendChild(form);
 
-      // Remove the form after submission (but keep the iframe)
-      setTimeout(() => {
-        if (document.body.contains(form)) {
-          document.body.removeChild(form);
+        // Set a timeout to consider the submission successful after 5 seconds
+        // This is because we can't directly detect success with the iframe approach
+        const timeoutId = setTimeout(() => {
+          console.log(`Form submission ${submissionId} considered successful (timeout)`);
+
+          // Update the pending submission in localStorage to mark it as successful
+          try {
+            localStorage.removeItem('pendingGoogleSheetsSubmission');
+          } catch (e) {
+            console.warn('Could not remove pending submission from localStorage:', e);
+          }
+
+          // Clean up the form and iframe
+          cleanupFormAndIframe();
+
+          // Resolve the promise as successful
+          resolve({
+            success: true,
+            message: `Results submitted to Google Sheet (submission ID: ${submissionId})`
+          });
+        }, 5000);
+
+        // Function to clean up the form and iframe
+        const cleanupFormAndIframe = () => {
+          try {
+            // Remove the form if it still exists
+            const formElement = document.getElementById(`google-sheets-form-${submissionId}`);
+            if (formElement && document.body.contains(formElement)) {
+              document.body.removeChild(formElement);
+            }
+
+            // Remove the iframe if it still exists
+            const iframeElement = document.getElementById(iframeId);
+            if (iframeElement && document.body.contains(iframeElement)) {
+              document.body.removeChild(iframeElement);
+            }
+          } catch (cleanupError) {
+            console.warn('Error cleaning up form or iframe:', cleanupError);
+          }
+        };
+
+        // Submit the form
+        console.log(`Submitting form to Google Sheets (submission ID: ${submissionId})...`);
+        form.submit();
+
+        // Store the result in localStorage for local access
+        localStorage.setItem('testResults', JSON.stringify(result));
+
+        // We don't resolve here because we're waiting for the timeout
+        // The promise will be resolved by the timeout handler
+      } catch (formError) {
+        console.error('Form submission error:', formError);
+
+        // If this is not the last retry, throw the error to trigger another retry
+        if (currentRetry < maxRetries) {
+          throw formError;
         }
-      }, 2000);
 
-      console.log('Form submission completed');
+        // Otherwise, resolve with failure
+        resolve({
+          success: false,
+          message: 'Error submitting to Google Sheet: ' + (formError as Error).message
+        });
+      }
+    });
 
-      // Store the result in localStorage for local access
-      localStorage.setItem('testResults', JSON.stringify(result));
+    // If we get here, there was an error in the current attempt
+    lastError = error;
+    console.error(`Error in Google Sheets submission attempt ${currentRetry + 1}/${maxRetries + 1}:`, error);
 
-      return { success: true, message: 'Results submitted to Google Sheet' };
-    } catch (formError) {
-      console.error('Form submission error:', formError);
-      return {
-        success: false,
-        message: 'Error submitting to Google Sheet: ' + (formError as Error).message
-      };
+    // Increment retry counter
+    currentRetry++;
+
+    // If we have retries left, wait before trying again
+    if (currentRetry <= maxRetries) {
+      // Exponential backoff: wait longer for each retry
+      const waitTime = Math.min(1000 * Math.pow(2, currentRetry), 10000); // Max 10 seconds
+      console.log(`Retrying in ${waitTime}ms...`);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
     }
-  } catch (error) {
-    console.error('Error sending results to Google Sheet:', error);
-    return {
-      success: false,
-      message: 'Failed to submit results to Google Sheet: ' + (error as Error).message
-    };
   }
+  // If we've exhausted all retries and still failed
+  console.error(`Failed to submit to Google Sheets after ${maxRetries + 1} attempts`);
+
+  // Store the failed submission for potential recovery later
+  try {
+    const pendingSubmission = JSON.parse(localStorage.getItem('pendingGoogleSheetsSubmission') || '{}');
+    pendingSubmission.attempts = (pendingSubmission.attempts || 0) + 1;
+    pendingSubmission.lastAttempt = Date.now();
+    pendingSubmission.lastError = lastError ? (lastError as Error).message : 'Unknown error';
+    localStorage.setItem('pendingGoogleSheetsSubmission', JSON.stringify(pendingSubmission));
+  } catch (e) {
+    console.warn('Could not update pending submission in localStorage:', e);
+  }
+
+  return {
+    success: false,
+    message: `Failed to submit results to Google Sheet after ${maxRetries + 1} attempts: ${lastError ? (lastError as Error).message : 'Unknown error'}`
+  };
 }
 
 /**
@@ -280,6 +379,54 @@ export function getResultById(resultId: string): TestResult | null {
  */
 export function getMostRecentResultByUser(userId: string): TestResult | null {
   return getResultsByUser(userId);
+}
+
+/**
+ * Retry any pending Google Sheets submissions that failed previously
+ * This should be called when the app initializes
+ */
+export async function retryPendingGoogleSheetsSubmissions(): Promise<void> {
+  if (typeof window === 'undefined') return; // Skip during SSR
+
+  try {
+    // Check if there's a pending submission
+    const pendingSubmissionStr = localStorage.getItem('pendingGoogleSheetsSubmission');
+    if (!pendingSubmissionStr) return;
+
+    const pendingSubmission = JSON.parse(pendingSubmissionStr);
+
+    // Only retry if the submission is less than 24 hours old
+    const MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
+    const now = Date.now();
+    const submissionTime = pendingSubmission.timestamp || 0;
+
+    if (now - submissionTime > MAX_AGE_MS) {
+      console.log('Pending submission is too old, removing it');
+      localStorage.removeItem('pendingGoogleSheetsSubmission');
+      return;
+    }
+
+    // Only retry if we haven't tried too many times already
+    const MAX_ATTEMPTS = 5;
+    if ((pendingSubmission.attempts || 0) >= MAX_ATTEMPTS) {
+      console.log(`Pending submission has been attempted ${pendingSubmission.attempts} times, giving up`);
+      return;
+    }
+
+    console.log('Found pending Google Sheets submission, retrying...');
+
+    // Retry the submission
+    const result = await sendResultToGoogleSheet(pendingSubmission.result);
+
+    if (result.success) {
+      console.log('Successfully retried pending Google Sheets submission');
+      localStorage.removeItem('pendingGoogleSheetsSubmission');
+    } else {
+      console.warn('Failed to retry pending Google Sheets submission:', result.message);
+    }
+  } catch (error) {
+    console.error('Error retrying pending Google Sheets submission:', error);
+  }
 }
 
 /**

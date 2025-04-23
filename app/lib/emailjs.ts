@@ -182,7 +182,17 @@ export async function testEmailJSConfig(): Promise<{ success: boolean; message: 
   }
 }
 
-export async function sendResultsEmailJS(result: TestResult): Promise<{ success: boolean; message: string }> {
+/**
+ * Send test results via email to the admin using EmailJS with enhanced reliability
+ *
+ * @param result The test result to send
+ * @param maxRetries Maximum number of retry attempts (default: 3)
+ * @returns A promise that resolves with success status and message
+ */
+export async function sendResultsEmailJS(
+  result: TestResult,
+  maxRetries: number = 3
+): Promise<{ success: boolean; message: string }> {
   console.log('EmailJS function called with result:', {
     fullName: result.fullName,
     email: result.email,
@@ -190,7 +200,26 @@ export async function sendResultsEmailJS(result: TestResult): Promise<{ success:
     secondaryGift: result.secondaryGift,
     timestamp: result.timestamp
   });
+
+  // Store a backup of the result in localStorage for recovery purposes
   try {
+    localStorage.setItem('lastEmailJSResult', JSON.stringify(result));
+    localStorage.setItem('pendingEmailJSSubmission', JSON.stringify({
+      result,
+      timestamp: Date.now(),
+      attempts: 0
+    }));
+    console.log('Test result saved to localStorage as backup for EmailJS');
+  } catch (storageError) {
+    console.warn('Could not save test result to localStorage for EmailJS:', storageError);
+  }
+
+  // Implement retry logic
+  let currentRetry = 0;
+  let lastError = null;
+
+  while (currentRetry <= maxRetries) {
+    try {
     // Format the scores for email
     let formattedScores = '';
 
@@ -366,44 +395,126 @@ export async function sendResultsEmailJS(result: TestResult): Promise<{ success:
       }
     }
 
-    console.log('EmailJS SUCCESS:', response);
-    return { success: true, message: "Email sent successfully" };
-  } catch (error) {
-    console.error('EmailJS ERROR:', error);
+      console.log('EmailJS SUCCESS:', response);
 
-    // More detailed error logging
-    if (error instanceof Error) {
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
-    } else {
-      console.error('Unknown error type:', typeof error);
-    }
-
-    // Check if EmailJS configuration is valid
-    console.error('EmailJS Configuration Check:', {
-      serviceId: EMAILJS_SERVICE_ID,
-      templateId: EMAILJS_TEMPLATE_ID,
-      publicKey: EMAILJS_PUBLIC_KEY ? EMAILJS_PUBLIC_KEY.substring(0, 4) + '...' : undefined,
-      adminEmail: ADMIN_EMAIL
-    });
-
-    let errorMessage = "Failed to send email";
-
-    if (error instanceof Error) {
-      errorMessage += ": " + error.message;
-    } else if (typeof error === 'object' && error !== null) {
+      // Remove the pending submission from localStorage
       try {
-        errorMessage += ": " + JSON.stringify(error);
+        localStorage.removeItem('pendingEmailJSSubmission');
       } catch (e) {
-        errorMessage += ": [Object cannot be stringified]";
+        console.warn('Could not remove pending EmailJS submission from localStorage:', e);
       }
-    } else {
-      errorMessage += ": " + String(error);
+
+      return { success: true, message: "Email sent successfully" };
+    } catch (error) {
+      // If we get here, there was an error in the current attempt
+      lastError = error;
+      console.error(`Error in EmailJS submission attempt ${currentRetry + 1}/${maxRetries + 1}:`, error);
+
+      // More detailed error logging
+      if (error instanceof Error) {
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      } else {
+        console.error('Unknown error type:', typeof error);
+      }
+
+      // Check if EmailJS configuration is valid
+      console.error('EmailJS Configuration Check:', {
+        serviceId: EMAILJS_SERVICE_ID,
+        templateId: EMAILJS_TEMPLATE_ID,
+        publicKey: EMAILJS_PUBLIC_KEY ? EMAILJS_PUBLIC_KEY.substring(0, 4) + '...' : undefined,
+        adminEmail: ADMIN_EMAIL
+      });
+
+      // Increment retry counter
+      currentRetry++;
+
+      // If we have retries left, wait before trying again
+      if (currentRetry <= maxRetries) {
+        // Exponential backoff: wait longer for each retry
+        const waitTime = Math.min(1000 * Math.pow(2, currentRetry), 10000); // Max 10 seconds
+        console.log(`Retrying EmailJS in ${waitTime}ms...`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      }
+    }
+  }
+
+  // If we've exhausted all retries and still failed
+  console.error(`Failed to send email via EmailJS after ${maxRetries + 1} attempts`);
+
+  // Store the failed submission for potential recovery later
+  try {
+    const pendingSubmission = JSON.parse(localStorage.getItem('pendingEmailJSSubmission') || '{}');
+    pendingSubmission.attempts = (pendingSubmission.attempts || 0) + 1;
+    pendingSubmission.lastAttempt = Date.now();
+    pendingSubmission.lastError = lastError ? (lastError as Error).message : 'Unknown error';
+    localStorage.setItem('pendingEmailJSSubmission', JSON.stringify(pendingSubmission));
+  } catch (e) {
+    console.warn('Could not update pending EmailJS submission in localStorage:', e);
+  }
+
+  let errorMessage = "Failed to send email";
+
+  if (lastError instanceof Error) {
+    errorMessage += ": " + lastError.message;
+  } else if (typeof lastError === 'object' && lastError !== null) {
+    try {
+      errorMessage += ": " + JSON.stringify(lastError);
+    } catch (e) {
+      errorMessage += ": [Object cannot be stringified]";
+    }
+  } else if (lastError) {
+    errorMessage += ": " + String(lastError);
+  }
+
+  return {
+    success: false,
+    message: errorMessage
+  };
+/**
+ * Retry any pending EmailJS submissions that failed previously
+ * This should be called when the app initializes
+ */
+export async function retryPendingEmailJSSubmissions(): Promise<void> {
+  if (typeof window === 'undefined') return; // Skip during SSR
+
+  try {
+    // Check if there's a pending submission
+    const pendingSubmissionStr = localStorage.getItem('pendingEmailJSSubmission');
+    if (!pendingSubmissionStr) return;
+
+    const pendingSubmission = JSON.parse(pendingSubmissionStr);
+
+    // Only retry if the submission is less than 24 hours old
+    const MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
+    const now = Date.now();
+    const submissionTime = pendingSubmission.timestamp || 0;
+
+    if (now - submissionTime > MAX_AGE_MS) {
+      console.log('Pending EmailJS submission is too old, removing it');
+      localStorage.removeItem('pendingEmailJSSubmission');
+      return;
     }
 
-    return {
-      success: false,
-      message: errorMessage
-    };
+    // Only retry if we haven't tried too many times already
+    const MAX_ATTEMPTS = 5;
+    if ((pendingSubmission.attempts || 0) >= MAX_ATTEMPTS) {
+      console.log(`Pending EmailJS submission has been attempted ${pendingSubmission.attempts} times, giving up`);
+      return;
+    }
+
+    console.log('Found pending EmailJS submission, retrying...');
+
+    // Retry the submission
+    const result = await sendResultsEmailJS(pendingSubmission.result);
+
+    if (result.success) {
+      console.log('Successfully retried pending EmailJS submission');
+      localStorage.removeItem('pendingEmailJSSubmission');
+    } else {
+      console.warn('Failed to retry pending EmailJS submission:', result.message);
+    }
+  } catch (error) {
+    console.error('Error retrying pending EmailJS submission:', error);
   }
 }
