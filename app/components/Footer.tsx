@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -8,7 +9,16 @@ const Footer = () => {
       <div className="container mx-auto px-6 sm:px-10 lg:px-16 max-w-6xl">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
-            <h3 className="text-xl font-semibold mb-5 text-white">Your Design</h3>
+            <div className="mb-5">
+              <div className="relative w-32 h-12 mb-3">
+                <Image
+                  src="/images/union-logo.svg"
+                  alt="Union Logo"
+                  fill
+                  style={{ objectFit: 'contain' }}
+                />
+              </div>
+            </div>
             <p className="text-gray-400 leading-relaxed">
               Discover your dominant redemptive gift and understand how you're uniquely designed to impact the world.
             </p>
@@ -49,7 +59,7 @@ const Footer = () => {
 
         <div className="mt-10 pt-8 border-t border-gray-800">
           <p className="text-center text-gray-500">
-            &copy; {currentYear} Your Design. All rights reserved.
+            &copy; {currentYear} Union Houston. All rights reserved.
           </p>
         </div>
       </div>

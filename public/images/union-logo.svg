@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="574px" height="340px" viewBox="0 0 574 340" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="union-logo" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="union-logo-white" transform="translate(34.000000, 34.000000)" fill-rule="nonzero">
+            <polygon id="Path" fill="#F3F3F3" points="0 0 113.4 113.4 0 113.4"></polygon>
+            <polygon id="Path" fill="#F3F3F3" points="113.4 0 0 0 113.4 113.4"></polygon>
+            <polygon id="Path" fill="#F3F3F3" points="264.6 113.4 264.6 113.4 264.6 113.4"></polygon>
+            <path d="M49.5,272.7 L49.5,151.2 L0,151.2 L0,272.7 L49.5,272.7 Z M112.5,272.7 L112.5,151.2 L63,151.2 L63,272.7 L112.5,272.7 Z M175.5,272.7 L175.5,151.2 L126,151.2 L126,272.7 L175.5,272.7 Z M238.5,272.7 L238.5,151.2 L189,151.2 L189,272.7 L238.5,272.7 Z M301.5,272.7 L301.5,151.2 L252,151.2 L252,272.7 L301.5,272.7 Z M364.5,272.7 L364.5,151.2 L315,151.2 L315,272.7 L364.5,272.7 Z M427.5,272.7 L427.5,151.2 L378,151.2 L378,272.7 L427.5,272.7 Z M490.5,272.7 L490.5,151.2 L441,151.2 L441,272.7 L490.5,272.7 Z" id="Shape" fill="#F3F3F3"></path>
+            <rect id="Rectangle" fill="#FF5000" x="504" y="214.2" width="36" height="36"></rect>
+        </g>
+    </g>
+</svg>

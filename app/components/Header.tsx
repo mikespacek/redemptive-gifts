@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -18,7 +19,15 @@ const Header = () => {
       <div className="container mx-auto px-6 sm:px-10 lg:px-16 py-4 max-w-6xl">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center space-x-2 group">
-            <span className="text-xl sm:text-2xl font-bold text-white group-hover:text-gray-300 transition-all duration-300">Your Design</span>
+            <div className="relative w-32 h-12">
+              <Image
+                src="/images/union-logo.svg"
+                alt="Union Logo"
+                fill
+                style={{ objectFit: 'contain' }}
+                priority
+              />
+            </div>
           </Link>
 
           <nav className="hidden md:flex space-x-10">
