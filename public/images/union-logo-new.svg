@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="64" viewBox="0 0 256 64" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" fill-rule="evenodd">
+    <!-- Triangle elements -->
+    <polygon fill="#FFFFFF" points="0,0 24,24 0,24"/>
+    <polygon fill="#FFFFFF" points="24,0 0,0 24,24"/>
+    
+    <!-- Text part (union) -->
+    <path d="M10,64 L10,32 L0,32 L0,64 L10,64 Z 
+             M25,64 L25,32 L15,32 L15,64 L25,64 Z 
+             M40,64 L40,32 L30,32 L30,64 L40,64 Z 
+             M55,64 L55,32 L45,32 L45,64 L55,64 Z 
+             M70,64 L70,32 L60,32 L60,64 L70,64 Z 
+             M85,64 L85,32 L75,32 L75,64 L85,64 Z 
+             M100,64 L100,32 L90,32 L90,64 L100,64 Z 
+             M115,64 L115,32 L105,32 L105,64 L115,64 Z" 
+          fill="#FFFFFF"/>
+    
+    <!-- Orange square -->
+    <rect fill="#FF5000" x="120" y="48" width="12" height="12"/>
+  </g>
+</svg>

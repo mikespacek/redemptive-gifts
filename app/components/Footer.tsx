@@ -10,12 +10,14 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
             <div className="mb-5">
-              <div className="relative w-32 h-12 mb-3">
+              <div className="relative w-40 h-10 mb-3">
                 <Image
                   src="/images/union-logo.svg"
                   alt="Union Logo"
-                  fill
+                  width={160}
+                  height={40}
                   style={{ objectFit: 'contain' }}
+                  className="invert brightness-0 filter"
                 />
               </div>
             </div>

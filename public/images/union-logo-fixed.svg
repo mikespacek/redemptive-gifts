@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="506px" height="122px" viewBox="0 0 506 122" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="union-logo" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="union-logo-white" fill-rule="nonzero">
+            <!-- Triangle elements -->
+            <polygon id="Path" fill="#FFFFFF" points="0 0 50 50 0 50"></polygon>
+            <polygon id="Path" fill="#FFFFFF" points="50 0 0 0 50 50"></polygon>
+            
+            <!-- Text part (union) -->
+            <path d="M20,121.5 L20,67 L0,67 L0,121.5 L20,121.5 Z M50,121.5 L50,67 L30,67 L30,121.5 L50,121.5 Z M80,121.5 L80,67 L60,67 L60,121.5 L80,121.5 Z M110,121.5 L110,67 L90,67 L90,121.5 L110,121.5 Z M140,121.5 L140,67 L120,67 L120,121.5 L140,121.5 Z M170,121.5 L170,67 L150,67 L150,121.5 L170,121.5 Z M200,121.5 L200,67 L180,67 L180,121.5 L200,121.5 Z M230,121.5 L230,67 L210,67 L210,121.5 L230,121.5 Z" id="Shape" fill="#FFFFFF"></path>
+            
+            <!-- Orange square -->
+            <rect id="Rectangle" fill="#FF5000" x="240" y="95" width="16" height="16"></rect>
+        </g>
+    </g>
+</svg>
