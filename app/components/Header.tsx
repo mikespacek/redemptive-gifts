@@ -20,30 +20,13 @@ const Header = () => {
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center space-x-2 group">
             <div className="relative w-48 h-12">
-              <svg width="192" height="48" viewBox="0 0 250 80" xmlns="http://www.w3.org/2000/svg">
-                <g fill="none">
-                  {/* Triangle elements */}
-                  <polygon fill="#FFFFFF" points="0,0 25,25 0,25"/>
-                  <polygon fill="#FFFFFF" points="25,0 0,0 25,25"/>
-
-                  {/* Small square in middle */}
-                  <rect fill="#FFFFFF" x="50" y="10" width="10" height="10"/>
-
-                  {/* Text part (union) */}
-                  <path d="M10,70 L10,35 L0,35 L0,70 L10,70 Z
-                          M30,70 L30,35 L20,35 L20,70 L30,70 Z
-                          M50,70 L50,35 L40,35 L40,70 L50,70 Z
-                          M70,70 L70,35 L60,35 L60,70 L70,70 Z
-                          M90,70 L90,35 L80,35 L80,70 L90,70 Z
-                          M110,70 L110,35 L100,35 L100,70 L110,70 Z
-                          M130,70 L130,35 L120,35 L120,70 L130,70 Z
-                          M150,70 L150,35 L140,35 L140,70 L150,70 Z"
-                      fill="#FFFFFF"/>
-
-                  {/* Orange square */}
-                  <rect fill="#FF5000" x="160" y="55" width="15" height="15"/>
-                </g>
-              </svg>
+              <img
+                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTc0IiBoZWlnaHQ9IjM0MCIgdmlld0JveD0iMCAwIDU3NCAzNDAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDM0LjAwMDAwMCwgMzQuMDAwMDAwKSIgZmlsbC1ydWxlPSJub256ZXJvIj48cG9seWdvbiBmaWxsPSIjRkZGRkZGIiBwb2ludHM9IjAgMCAxMTMuNCAxMTMuNCAwIDExMy40Ij48L3BvbHlnb24+PHBvbHlnb24gZmlsbD0iI0ZGRkZGRiIgcG9pbnRzPSIxMTMuNCAwIDAgMCAxMTMuNCAxMTMuNCI+PC9wb2x5Z29uPjxwb2x5Z29uIGZpbGw9IiNGRkZGRkYiIHBvaW50cz0iMjY0LjYgMTEzLjQgMjY0LjYgMTEzLjQgMjY0LjYgMTEzLjQiPjwvcG9seWdvbj48cGF0aCBkPSJNNDkuNSwyNzIuNyBMNDkuNSwxNTEuMiBMMCwxNTEuMiBMMCwyNzIuNyBMNDkuNSwyNzIuNyBaIE0xMTIuNSwyNzIuNyBMMTEyLjUsMTUxLjIgTDYzLDE1MS4yIEw2MywyNzIuNyBMMTEyLjUsMjcyLjcgWiBNMTc1LjUsMjcyLjcgTDE3NS41LDE1MS4yIEwxMjYsMTUxLjIgTDEyNiwyNzIuNyBMMTc1LjUsMjcyLjcgWiBNMjM4LjUsMjcyLjcgTDIzOC41LDE1MS4yIEwxODksMTUxLjIgTDE4OSwyNzIuNyBMMjM4LjUsMjcyLjcgWiBNMzAxLjUsMjcyLjcgTDMwMS41LDE1MS4yIEwyNTIsMTUxLjIgTDI1MiwyNzIuNyBMMzAxLjUsMjcyLjcgWiBNMzY0LjUsMjcyLjcgTDM2NC41LDE1MS4yIEwzMTUsMTUxLjIgTDMxNSwyNzIuNyBMMzY0LjUsMjcyLjcgWiBNNDI3LjUsMjcyLjcgTDQyNy41LDE1MS4yIEwzNzgsMTUxLjIgTDM3OCwyNzIuNyBMNDI3LjUsMjcyLjcgWiBNNDkwLjUsMjcyLjcgTDQ5MC41LDE1MS4yIEw0NDEsMTUxLjIgTDQ0MSwyNzIuNyBMNDkwLjUsMjcyLjcgWiIgZmlsbD0iI0ZGRkZGRiI+PC9wYXRoPjxyZWN0IGZpbGw9IiNGRjUwMDAiIHg9IjUwNCIgeT0iMjE0LjIiIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PC9yZWN0PjwvZz48L2c+PC9zdmc+"
+                alt="Union Logo"
+                width={192}
+                height={48}
+                style={{ objectFit: 'contain' }}
+              />
             </div>
           </Link>
 
