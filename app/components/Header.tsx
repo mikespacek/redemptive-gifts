@@ -21,7 +21,7 @@ const Header = () => {
           <Link href="/" className="flex items-center space-x-2 group">
             <div className="relative w-48 h-12">
               <img
-                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTc0IiBoZWlnaHQ9IjM0MCIgdmlld0JveD0iMCAwIDU3NCAzNDAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDM0LjAwMDAwMCwgMzQuMDAwMDAwKSIgZmlsbC1ydWxlPSJub256ZXJvIj48cG9seWdvbiBmaWxsPSIjRkZGRkZGIiBwb2ludHM9IjAgMCAxMTMuNCAxMTMuNCAwIDExMy40Ij48L3BvbHlnb24+PHBvbHlnb24gZmlsbD0iI0ZGRkZGRiIgcG9pbnRzPSIxMTMuNCAwIDAgMCAxMTMuNCAxMTMuNCI+PC9wb2x5Z29uPjxwb2x5Z29uIGZpbGw9IiNGRkZGRkYiIHBvaW50cz0iMjY0LjYgMTEzLjQgMjY0LjYgMTEzLjQgMjY0LjYgMTEzLjQiPjwvcG9seWdvbj48cGF0aCBkPSJNNDkuNSwyNzIuNyBMNDkuNSwxNTEuMiBMMCwxNTEuMiBMMCwyNzIuNyBMNDkuNSwyNzIuNyBaIE0xMTIuNSwyNzIuNyBMMTEyLjUsMTUxLjIgTDYzLDE1MS4yIEw2MywyNzIuNyBMMTEyLjUsMjcyLjcgWiBNMTc1LjUsMjcyLjcgTDE3NS41LDE1MS4yIEwxMjYsMTUxLjIgTDEyNiwyNzIuNyBMMTc1LjUsMjcyLjcgWiBNMjM4LjUsMjcyLjcgTDIzOC41LDE1MS4yIEwxODksMTUxLjIgTDE4OSwyNzIuNyBMMjM4LjUsMjcyLjcgWiBNMzAxLjUsMjcyLjcgTDMwMS41LDE1MS4yIEwyNTIsMTUxLjIgTDI1MiwyNzIuNyBMMzAxLjUsMjcyLjcgWiBNMzY0LjUsMjcyLjcgTDM2NC41LDE1MS4yIEwzMTUsMTUxLjIgTDMxNSwyNzIuNyBMMzY0LjUsMjcyLjcgWiBNNDI3LjUsMjcyLjcgTDQyNy41LDE1MS4yIEwzNzgsMTUxLjIgTDM3OCwyNzIuNyBMNDI3LjUsMjcyLjcgWiBNNDkwLjUsMjcyLjcgTDQ5MC41LDE1MS4yIEw0NDEsMTUxLjIgTDQ0MSwyNzIuNyBMNDkwLjUsMjcyLjcgWiIgZmlsbD0iI0ZGRkZGRiI+PC9wYXRoPjxyZWN0IGZpbGw9IiNGRjUwMDAiIHg9IjUwNCIgeT0iMjE0LjIiIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiI+PC9yZWN0PjwvZz48L2c+PC9zdmc+"
+                src="https://unionhouston.com/wp-content/uploads/2024/07/union-logo-white.png"
                 alt="Union Logo"
                 width={192}
                 height={48}
