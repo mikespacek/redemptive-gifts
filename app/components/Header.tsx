@@ -20,14 +20,30 @@ const Header = () => {
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center space-x-2 group">
             <div className="relative w-48 h-12">
-              <Image
-                src="/images/union-logo-exact.svg"
-                alt="Union Logo"
-                width={192}
-                height={48}
-                style={{ objectFit: 'contain' }}
-                priority
-              />
+              <svg width="192" height="48" viewBox="0 0 250 80" xmlns="http://www.w3.org/2000/svg">
+                <g fill="none">
+                  {/* Triangle elements */}
+                  <polygon fill="#FFFFFF" points="0,0 25,25 0,25"/>
+                  <polygon fill="#FFFFFF" points="25,0 0,0 25,25"/>
+
+                  {/* Small square in middle */}
+                  <rect fill="#FFFFFF" x="50" y="10" width="10" height="10"/>
+
+                  {/* Text part (union) */}
+                  <path d="M10,70 L10,35 L0,35 L0,70 L10,70 Z
+                          M30,70 L30,35 L20,35 L20,70 L30,70 Z
+                          M50,70 L50,35 L40,35 L40,70 L50,70 Z
+                          M70,70 L70,35 L60,35 L60,70 L70,70 Z
+                          M90,70 L90,35 L80,35 L80,70 L90,70 Z
+                          M110,70 L110,35 L100,35 L100,70 L110,70 Z
+                          M130,70 L130,35 L120,35 L120,70 L130,70 Z
+                          M150,70 L150,35 L140,35 L140,70 L150,70 Z"
+                      fill="#FFFFFF"/>
+
+                  {/* Orange square */}
+                  <rect fill="#FF5000" x="160" y="55" width="15" height="15"/>
+                </g>
+              </svg>
             </div>
           </Link>
 
