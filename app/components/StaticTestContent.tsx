@@ -253,28 +253,87 @@ export default function StaticTestContent() {
 
       console.log('Test results stored in localStorage with keys: redemptiveGiftsTestResults and testResults');
 
-      // Send results to Google Sheet and email
+      // Send results to Google Sheet and email with enhanced error handling
       try {
         // Only send to Google Sheets if we have user info
         if (userInfo?.fullName && userInfo?.email) {
-          console.log('Attempting to send results to Google Sheet...');
-          try {
-            const sheetResult = await sendResultToGoogleSheet(results);
-            console.log('Google Sheet result:', sheetResult);
+          // Add a delay to ensure localStorage is saved before proceeding
+          await new Promise(resolve => setTimeout(resolve, 500));
 
-            if (sheetResult.success) {
-              console.log('Results sent to Google Sheet successfully');
-            } else {
-              console.warn('Google Sheet submission returned error:', sheetResult.message);
-            }
+          console.log('Attempting to send results to Google Sheet...');
+
+          // First try Google Sheets
+          try {
+            console.log('Google Sheets data being sent:', {
+              userId: results.userId,
+              fullName: results.fullName,
+              email: results.email,
+              dominantGift: results.dominantGift,
+              secondaryGift: results.secondaryGift,
+              teacherScore: results.columnScores.T,
+              giverScore: results.columnScores.G,
+              rulerScore: results.columnScores.R,
+              exhorterScore: results.columnScores.E,
+              mercyScore: results.columnScores.M,
+              prophetScore: results.columnScores.P,
+              servantScore: results.columnScores.S
+            });
+
+            // Use direct fetch approach for Google Sheets
+            const GOOGLE_SHEET_URL = process.env.NEXT_PUBLIC_GOOGLE_SHEET_URL ||
+              'https://script.google.com/macros/s/AKfycbyBcBmJFHVcyZ6xHZr1X0vcYrB5B7cxTKNPTliR4kkYj0vTvrIUr88I-IszJ49Y2FbD/exec';
+
+            console.log('Google Sheet URL:', GOOGLE_SHEET_URL);
+
+            // Create form data
+            const formData = new URLSearchParams();
+            formData.append('userId', results.userId);
+            formData.append('timestamp', new Date().toISOString());
+            formData.append('fullName', results.fullName || 'Anonymous');
+            formData.append('email', results.email || 'No email provided');
+            formData.append('dominantGift', results.dominantGift);
+            formData.append('secondaryGift', results.secondaryGift);
+            formData.append('teacherScore', String(results.columnScores.T));
+            formData.append('giverScore', String(results.columnScores.G));
+            formData.append('rulerScore', String(results.columnScores.R));
+            formData.append('exhorterScore', String(results.columnScores.E));
+            formData.append('mercyScore', String(results.columnScores.M));
+            formData.append('prophetScore', String(results.columnScores.P));
+            formData.append('servantScore', String(results.columnScores.S));
+
+            // Send the request
+            console.log('Sending direct fetch request to Google Sheets...');
+            const response = await fetch(GOOGLE_SHEET_URL, {
+              method: 'POST',
+              mode: 'no-cors',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: formData.toString(),
+            });
+
+            console.log('Google Sheets fetch response received');
+            console.log('Google Sheets submission completed');
           } catch (sheetError) {
             console.error('Error sending to Google Sheet:', sheetError);
             // Continue with the test - don't block the user from seeing results
           }
 
-          // Send email to admin using EmailJS
+          // Add a delay between requests
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          // Then try EmailJS
           console.log('Sending email notification to admin using EmailJS...');
           try {
+            // Log EmailJS configuration
+            console.log('EmailJS Configuration:', {
+              serviceId: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_4tgz7bd',
+              templateId: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_mzzf8vc',
+              publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY ?
+                (process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY.substring(0, 4) + '...') : 'Not configured',
+              adminEmail: process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'mikespacek@unionhouston.com'
+            });
+
             const emailResult = await sendResultsEmailJS(results);
             console.log('EmailJS result:', emailResult);
 
