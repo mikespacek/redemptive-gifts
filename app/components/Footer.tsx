@@ -10,29 +10,29 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
             <div className="mb-5">
-              <div className="relative w-48 h-12 mb-3">
-                <svg width="192" height="48" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
-                  <g fill="none" fillRule="evenodd">
-                    {/* Triangle elements */}
-                    <polygon fill="#FFFFFF" points="0,0 20,20 0,20"/>
-                    <polygon fill="#FFFFFF" points="20,0 0,0 20,20"/>
+              <div className="relative w-48 h-16 mb-3">
+                <svg width="200" height="64" viewBox="0 0 574 340" xmlns="http://www.w3.org/2000/svg">
+                  <g fill="none">
+                    {/* Triangle elements at top left */}
+                    <polygon fill="#FFFFFF" points="34,34 147.4,147.4 34,147.4"/>
+                    <polygon fill="#FFFFFF" points="147.4,34 34,34 147.4,147.4"/>
 
                     {/* Small square in middle */}
-                    <rect fill="#FFFFFF" x="40" y="8" width="8" height="8"/>
+                    <rect fill="#FFFFFF" x="264.6" y="113.4" width="34" height="34"/>
 
                     {/* Text part (union) */}
-                    <path d="M8,55 L8,30 L0,30 L0,55 L8,55 Z
-                            M23,55 L23,30 L15,30 L15,55 L23,55 Z
-                            M38,55 L38,30 L30,30 L30,55 L38,55 Z
-                            M53,55 L53,30 L45,30 L45,55 L53,55 Z
-                            M68,55 L68,30 L60,30 L60,55 L68,55 Z
-                            M83,55 L83,30 L75,30 L75,55 L83,55 Z
-                            M98,55 L98,30 L90,30 L90,55 L98,55 Z
-                            M113,55 L113,30 L105,30 L105,55 L113,55 Z"
+                    <path d="M49.5,272.7 L49.5,151.2 L0,151.2 L0,272.7 L49.5,272.7 Z
+                            M112.5,272.7 L112.5,151.2 L63,151.2 L63,272.7 L112.5,272.7 Z
+                            M175.5,272.7 L175.5,151.2 L126,151.2 L126,272.7 L175.5,272.7 Z
+                            M238.5,272.7 L238.5,151.2 L189,151.2 L189,272.7 L238.5,272.7 Z
+                            M301.5,272.7 L301.5,151.2 L252,151.2 L252,272.7 L301.5,272.7 Z
+                            M364.5,272.7 L364.5,151.2 L315,151.2 L315,272.7 L364.5,272.7 Z
+                            M427.5,272.7 L427.5,151.2 L378,151.2 L378,272.7 L427.5,272.7 Z
+                            M490.5,272.7 L490.5,151.2 L441,151.2 L441,272.7 L490.5,272.7 Z"
                         fill="#FFFFFF"/>
 
                     {/* Orange square */}
-                    <rect fill="#FF5000" x="125" y="45" width="10" height="10"/>
+                    <rect fill="#FF5000" x="504" y="214.2" width="36" height="36"/>
                   </g>
                 </svg>
               </div>
