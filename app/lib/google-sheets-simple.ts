@@ -32,62 +32,41 @@ export async function sendResultToGoogleSheet(
       secondaryGift: result.secondaryGift,
     };
 
-    // Add the column scores with the correct field names expected by the Google Apps Script
+    // Add the column scores
     if (result.columnScores) {
-      // Map column letters to the full field names expected by the Google Apps Script
-      formattedData.teacherScore = result.columnScores.T;
-      formattedData.giverScore = result.columnScores.G;
-      formattedData.rulerScore = result.columnScores.R;
-      formattedData.exhorterScore = result.columnScores.E;
-      formattedData.mercyScore = result.columnScores.M;
-      formattedData.prophetScore = result.columnScores.P;
-      formattedData.servantScore = result.columnScores.S;
-
-      // Log the scores for debugging
-      console.log('Sending scores to Google Sheets:', {
-        teacherScore: formattedData.teacherScore,
-        giverScore: formattedData.giverScore,
-        rulerScore: formattedData.rulerScore,
-        exhorterScore: formattedData.exhorterScore,
-        mercyScore: formattedData.mercyScore,
-        prophetScore: formattedData.prophetScore,
-        servantScore: formattedData.servantScore
+      Object.entries(result.columnScores).forEach(([column, score]) => {
+        formattedData[`score_${column}`] = score;
       });
     }
 
-    // Use fetch API to send data directly to Google Sheets
-    console.log('Sending data to Google Sheets via fetch:', formattedData);
+    // Create a simple form and submit it directly
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = GOOGLE_SHEET_URL;
+    form.target = '_blank'; // Open in a new tab to avoid navigation
 
-    // Create URL-encoded form data
-    const formData = new URLSearchParams();
+    // Add each field to the form
     Object.entries(formattedData).forEach(([key, value]) => {
-      formData.append(key, String(value));
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = String(value);
+      form.appendChild(input);
     });
 
-    try {
-      // Make the fetch request
-      console.log('Sending fetch request to:', GOOGLE_SHEET_URL);
-      const response = await fetch(GOOGLE_SHEET_URL, {
-        method: 'POST',
-        mode: 'no-cors', // This is important for CORS issues
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: formData.toString(),
-      });
+    // Add the form to the document body
+    document.body.appendChild(form);
 
-      console.log('Fetch response received:', response);
+    // Submit the form
+    console.log('Submitting form to Google Sheets...');
+    form.submit();
 
-      // Since we're using no-cors mode, we can't actually read the response
-      // But we can check if the request was sent successfully
-      if (response) {
-        console.log('Google Sheets request sent successfully');
+    // Remove the form after submission
+    setTimeout(() => {
+      if (document.body.contains(form)) {
+        document.body.removeChild(form);
       }
-    } catch (fetchError) {
-      console.error('Fetch error:', fetchError);
-      throw new Error('Failed to send data to Google Sheets: ' +
-                     (fetchError instanceof Error ? fetchError.message : String(fetchError)));
-    }
+    }, 1000);
 
     return {
       success: true,

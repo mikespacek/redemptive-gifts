@@ -105,11 +105,8 @@ export async function sendResultsEmailJS(
     // Use full name for personalization
     const userName = result.fullName || 'Friend';
 
-    // Check if user provided an email
-    const userHasEmail = result.email && result.email.includes('@');
-
-    // Prepare template parameters for admin email
-    const adminTemplateParams = {
+    // Prepare template parameters
+    const templateParams = {
       // Basic info
       to_email: ADMIN_EMAIL,
       from_name: 'Your Design',
@@ -155,124 +152,24 @@ export async function sendResultsEmailJS(
       `
     };
 
-    console.log('Sending emails with EmailJS:', {
+    console.log('Sending email with EmailJS:', {
       serviceId: EMAILJS_SERVICE_ID,
       templateId: EMAILJS_TEMPLATE_ID,
-      publicKey: EMAILJS_PUBLIC_KEY ? 'Configured' : 'Not configured',
-      sendingToUser: userHasEmail
+      publicKey: EMAILJS_PUBLIC_KEY ? 'Configured' : 'Not configured'
     });
 
-    // Initialize EmailJS with detailed logging
-    console.log('Initializing EmailJS with public key:',
-                EMAILJS_PUBLIC_KEY.substring(0, 4) + '...' + EMAILJS_PUBLIC_KEY.substring(EMAILJS_PUBLIC_KEY.length - 4));
-    console.log('EmailJS Service ID:', EMAILJS_SERVICE_ID);
-    console.log('EmailJS Template ID:', EMAILJS_TEMPLATE_ID);
+    // Initialize EmailJS
+    emailjs.init(EMAILJS_PUBLIC_KEY);
 
-    try {
-      // Initialize EmailJS
-      emailjs.init(EMAILJS_PUBLIC_KEY);
-      console.log('EmailJS initialized successfully');
-    } catch (initError) {
-      console.error('Error initializing EmailJS:', initError);
-      throw new Error('Failed to initialize EmailJS: ' +
-                     (initError instanceof Error ? initError.message : String(initError)));
-    }
+    // Send the email
+    const response = await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_ID,
+      templateParams
+    );
 
-    // Log the template parameters for debugging (excluding sensitive info)
-    console.log('Sending admin email with template params:', {
-      to_email: adminTemplateParams.to_email,
-      subject: adminTemplateParams.subject,
-      user_name: adminTemplateParams.user_name,
-      dominant_gift: adminTemplateParams.dominant_gift,
-      secondary_gift: adminTemplateParams.secondary_gift
-    });
-
-    // Send email to admin with detailed error handling
-    let adminResponse;
-    try {
-      adminResponse = await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        adminTemplateParams
-      );
-    } catch (sendError) {
-      console.error('Error sending admin email:', sendError);
-
-      // Check for specific error types
-      if (sendError instanceof Error) {
-        if (sendError.message.includes('Network Error')) {
-          console.error('Network error detected. Check internet connection.');
-        } else if (sendError.message.includes('timeout')) {
-          console.error('Request timeout. EmailJS service might be slow or unavailable.');
-        } else if (sendError.message.includes('401')) {
-          console.error('Authentication error. Check EmailJS credentials.');
-        }
-      }
-
-      throw sendError;
-    }
-
-    console.log('Admin email sent successfully:', adminResponse);
-
-    // If user provided an email, send them a copy too
-    if (userHasEmail) {
-      try {
-        // Create user template params - same as admin but with user's email
-        const userTemplateParams = {
-          ...adminTemplateParams,
-          to_email: result.email,
-          subject: `Your Design Test Results`
-        };
-
-        // Log the user email parameters for debugging (excluding sensitive info)
-        console.log('Sending user email with template params:', {
-          to_email: userTemplateParams.to_email,
-          subject: userTemplateParams.subject,
-          user_name: userTemplateParams.user_name
-        });
-
-        // Send email to user with detailed error handling
-        let userResponse;
-        try {
-          userResponse = await emailjs.send(
-            EMAILJS_SERVICE_ID,
-            EMAILJS_TEMPLATE_ID,
-            userTemplateParams
-          );
-        } catch (sendError) {
-          console.error('Error sending user email:', sendError);
-
-          // Check for specific error types
-          if (sendError instanceof Error) {
-            if (sendError.message.includes('Network Error')) {
-              console.error('Network error detected. Check internet connection.');
-            } else if (sendError.message.includes('timeout')) {
-              console.error('Request timeout. EmailJS service might be slow or unavailable.');
-            } else if (sendError.message.includes('401')) {
-              console.error('Authentication error. Check EmailJS credentials.');
-            }
-          }
-
-          throw sendError;
-        }
-
-        console.log('User email sent successfully:', userResponse);
-        return {
-          success: true,
-          message: "Emails sent successfully to admin and user"
-        };
-      } catch (userEmailError) {
-        console.error('Error sending email to user:', userEmailError);
-        // Still return success since admin email was sent
-        return {
-          success: true,
-          message: "Email sent to admin only. Failed to send to user: " +
-                  (userEmailError instanceof Error ? userEmailError.message : String(userEmailError))
-        };
-      }
-    }
-
-    return { success: true, message: "Email sent successfully to admin" };
+    console.log('EmailJS SUCCESS:', response);
+    return { success: true, message: "Email sent successfully" };
   } catch (error) {
     console.error('EmailJS ERROR:', error);
 
