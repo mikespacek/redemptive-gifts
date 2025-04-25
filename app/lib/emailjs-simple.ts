@@ -165,8 +165,11 @@ export async function sendResultsEmailJS(
     // Initialize EmailJS with detailed logging
     console.log('Initializing EmailJS with public key:',
                 EMAILJS_PUBLIC_KEY.substring(0, 4) + '...' + EMAILJS_PUBLIC_KEY.substring(EMAILJS_PUBLIC_KEY.length - 4));
+    console.log('EmailJS Service ID:', EMAILJS_SERVICE_ID);
+    console.log('EmailJS Template ID:', EMAILJS_TEMPLATE_ID);
 
     try {
+      // Initialize EmailJS
       emailjs.init(EMAILJS_PUBLIC_KEY);
       console.log('EmailJS initialized successfully');
     } catch (initError) {

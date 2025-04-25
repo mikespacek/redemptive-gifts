@@ -55,49 +55,39 @@ export async function sendResultToGoogleSheet(
       });
     }
 
-    // Create a simple form and submit it directly
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = GOOGLE_SHEET_URL;
+    // Use fetch API to send data directly to Google Sheets
+    console.log('Sending data to Google Sheets via fetch:', formattedData);
 
-    // Create a hidden iframe for submission
-    const iframe = document.createElement('iframe');
-    iframe.name = 'hidden_iframe';
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-
-    // Target the hidden iframe to avoid page navigation
-    form.target = 'hidden_iframe';
-
-    // Add each field to the form individually
-    // This is more compatible with the Google Apps Script
+    // Create URL-encoded form data
+    const formData = new URLSearchParams();
     Object.entries(formattedData).forEach(([key, value]) => {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = String(value);
-      form.appendChild(input);
+      formData.append(key, String(value));
     });
 
-    // Log the data being sent
-    console.log('Sending data to Google Sheets:', formattedData);
+    try {
+      // Make the fetch request
+      console.log('Sending fetch request to:', GOOGLE_SHEET_URL);
+      const response = await fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors', // This is important for CORS issues
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData.toString(),
+      });
 
-    // Add the form to the document body
-    document.body.appendChild(form);
+      console.log('Fetch response received:', response);
 
-    // Submit the form
-    console.log('Submitting form to Google Sheets...');
-    form.submit();
-
-    // Remove the form and iframe after submission
-    setTimeout(() => {
-      if (document.body.contains(form)) {
-        document.body.removeChild(form);
+      // Since we're using no-cors mode, we can't actually read the response
+      // But we can check if the request was sent successfully
+      if (response) {
+        console.log('Google Sheets request sent successfully');
       }
-      if (document.body.contains(iframe)) {
-        document.body.removeChild(iframe);
-      }
-    }, 1000);
+    } catch (fetchError) {
+      console.error('Fetch error:', fetchError);
+      throw new Error('Failed to send data to Google Sheets: ' +
+                     (fetchError instanceof Error ? fetchError.message : String(fetchError)));
+    }
 
     return {
       success: true,
