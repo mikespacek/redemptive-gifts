@@ -10,32 +10,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
             <div className="mb-5">
-              <div className="relative w-48 h-16 mb-3">
-                <svg width="200" height="64" viewBox="0 0 574 340" xmlns="http://www.w3.org/2000/svg">
-                  <g fill="none">
-                    {/* Triangle elements at top left */}
-                    <polygon fill="#FFFFFF" points="34,34 147.4,147.4 34,147.4"/>
-                    <polygon fill="#FFFFFF" points="147.4,34 34,34 147.4,147.4"/>
-
-                    {/* Small square in middle */}
-                    <rect fill="#FFFFFF" x="264.6" y="113.4" width="34" height="34"/>
-
-                    {/* Text part (union) */}
-                    <path d="M49.5,272.7 L49.5,151.2 L0,151.2 L0,272.7 L49.5,272.7 Z
-                            M112.5,272.7 L112.5,151.2 L63,151.2 L63,272.7 L112.5,272.7 Z
-                            M175.5,272.7 L175.5,151.2 L126,151.2 L126,272.7 L175.5,272.7 Z
-                            M238.5,272.7 L238.5,151.2 L189,151.2 L189,272.7 L238.5,272.7 Z
-                            M301.5,272.7 L301.5,151.2 L252,151.2 L252,272.7 L301.5,272.7 Z
-                            M364.5,272.7 L364.5,151.2 L315,151.2 L315,272.7 L364.5,272.7 Z
-                            M427.5,272.7 L427.5,151.2 L378,151.2 L378,272.7 L427.5,272.7 Z
-                            M490.5,272.7 L490.5,151.2 L441,151.2 L441,272.7 L490.5,272.7 Z"
-                        fill="#FFFFFF"/>
-
-                    {/* Orange square */}
-                    <rect fill="#FF5000" x="504" y="214.2" width="36" height="36"/>
-                  </g>
-                </svg>
-              </div>
+              <span className="text-2xl font-bold text-white mb-3 block">Your Design</span>
             </div>
             <p className="text-gray-400 leading-relaxed">
               Discover your dominant redemptive gift and understand how you're uniquely designed to impact the world.
