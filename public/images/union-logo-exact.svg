@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="574" height="340" viewBox="0 0 574 340" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" fill-rule="evenodd">
+    <!-- Triangle elements at top left -->
+    <polygon fill="#FFFFFF" points="34,34 147.4,147.4 34,147.4"/>
+    <polygon fill="#FFFFFF" points="147.4,34 34,34 147.4,147.4"/>
+    
+    <!-- Small square in the middle -->
+    <rect fill="#FFFFFF" x="264.6" y="113.4" width="34" height="34"/>
+    
+    <!-- "union" text -->
+    <path d="M83.5,306.7 L83.5,185.2 L34,185.2 L34,306.7 L83.5,306.7 Z 
+             M146.5,306.7 L146.5,185.2 L97,185.2 L97,306.7 L146.5,306.7 Z 
+             M209.5,306.7 L209.5,185.2 L160,185.2 L160,306.7 L209.5,306.7 Z 
+             M272.5,306.7 L272.5,185.2 L223,185.2 L223,306.7 L272.5,306.7 Z 
+             M335.5,306.7 L335.5,185.2 L286,185.2 L286,306.7 L335.5,306.7 Z 
+             M398.5,306.7 L398.5,185.2 L349,185.2 L349,306.7 L398.5,306.7 Z 
+             M461.5,306.7 L461.5,185.2 L412,185.2 L412,306.7 L461.5,306.7 Z 
+             M524.5,306.7 L524.5,185.2 L475,185.2 L475,306.7 L524.5,306.7 Z" 
+          fill="#FFFFFF"/>
+    
+    <!-- Orange square at bottom right -->
+    <rect fill="#FF5000" x="538" y="248.2" width="36" height="36"/>
+  </g>
+</svg>

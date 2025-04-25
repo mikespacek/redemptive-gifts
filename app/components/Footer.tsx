@@ -12,7 +12,7 @@ const Footer = () => {
             <div className="mb-5">
               <div className="relative w-48 h-12 mb-3">
                 <Image
-                  src="/images/union-logo-correct.svg"
+                  src="/images/union-logo-exact.svg"
                   alt="Union Logo"
                   width={192}
                   height={48}

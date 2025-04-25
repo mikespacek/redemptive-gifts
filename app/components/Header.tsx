@@ -21,7 +21,7 @@ const Header = () => {
           <Link href="/" className="flex items-center space-x-2 group">
             <div className="relative w-48 h-12">
               <Image
-                src="/images/union-logo-correct.svg"
+                src="/images/union-logo-exact.svg"
                 alt="Union Logo"
                 width={192}
                 height={48}
