@@ -19,15 +19,14 @@ const Header = () => {
       <div className="container mx-auto px-6 sm:px-10 lg:px-16 py-4 max-w-6xl">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center space-x-2 group">
-            <div className="relative w-40 h-10">
+            <div className="relative w-48 h-12">
               <Image
-                src="/images/union-logo.svg"
+                src="/images/union-logo-correct.svg"
                 alt="Union Logo"
-                width={160}
-                height={40}
+                width={192}
+                height={48}
                 style={{ objectFit: 'contain' }}
                 priority
-                className="invert brightness-0 filter"
               />
             </div>
           </Link>
