@@ -32,10 +32,26 @@ export async function sendResultToGoogleSheet(
       secondaryGift: result.secondaryGift,
     };
 
-    // Add the column scores
+    // Add the column scores with the correct field names expected by the Google Apps Script
     if (result.columnScores) {
-      Object.entries(result.columnScores).forEach(([column, score]) => {
-        formattedData[`score_${column}`] = score;
+      // Map column letters to the full field names expected by the Google Apps Script
+      formattedData.teacherScore = result.columnScores.T;
+      formattedData.giverScore = result.columnScores.G;
+      formattedData.rulerScore = result.columnScores.R;
+      formattedData.exhorterScore = result.columnScores.E;
+      formattedData.mercyScore = result.columnScores.M;
+      formattedData.prophetScore = result.columnScores.P;
+      formattedData.servantScore = result.columnScores.S;
+
+      // Log the scores for debugging
+      console.log('Sending scores to Google Sheets:', {
+        teacherScore: formattedData.teacherScore,
+        giverScore: formattedData.giverScore,
+        rulerScore: formattedData.rulerScore,
+        exhorterScore: formattedData.exhorterScore,
+        mercyScore: formattedData.mercyScore,
+        prophetScore: formattedData.prophetScore,
+        servantScore: formattedData.servantScore
       });
     }
 
@@ -43,7 +59,15 @@ export async function sendResultToGoogleSheet(
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = GOOGLE_SHEET_URL;
-    form.target = '_blank'; // Open in a new tab to avoid navigation
+
+    // Create a hidden iframe for submission
+    const iframe = document.createElement('iframe');
+    iframe.name = 'hidden_iframe';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    // Target the hidden iframe to avoid page navigation
+    form.target = 'hidden_iframe';
 
     // Add each field to the form
     Object.entries(formattedData).forEach(([key, value]) => {
@@ -61,10 +85,13 @@ export async function sendResultToGoogleSheet(
     console.log('Submitting form to Google Sheets...');
     form.submit();
 
-    // Remove the form after submission
+    // Remove the form and iframe after submission
     setTimeout(() => {
       if (document.body.contains(form)) {
         document.body.removeChild(form);
+      }
+      if (document.body.contains(iframe)) {
+        document.body.removeChild(iframe);
       }
     }, 1000);
 

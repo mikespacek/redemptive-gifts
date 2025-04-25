@@ -105,8 +105,11 @@ export async function sendResultsEmailJS(
     // Use full name for personalization
     const userName = result.fullName || 'Friend';
 
-    // Prepare template parameters
-    const templateParams = {
+    // Check if user provided an email
+    const userHasEmail = result.email && result.email.includes('@');
+
+    // Prepare template parameters for admin email
+    const adminTemplateParams = {
       // Basic info
       to_email: ADMIN_EMAIL,
       from_name: 'Your Design',
@@ -152,24 +155,59 @@ export async function sendResultsEmailJS(
       `
     };
 
-    console.log('Sending email with EmailJS:', {
+    console.log('Sending emails with EmailJS:', {
       serviceId: EMAILJS_SERVICE_ID,
       templateId: EMAILJS_TEMPLATE_ID,
-      publicKey: EMAILJS_PUBLIC_KEY ? 'Configured' : 'Not configured'
+      publicKey: EMAILJS_PUBLIC_KEY ? 'Configured' : 'Not configured',
+      sendingToUser: userHasEmail
     });
 
     // Initialize EmailJS
     emailjs.init(EMAILJS_PUBLIC_KEY);
 
-    // Send the email
-    const response = await emailjs.send(
+    // Send email to admin
+    const adminResponse = await emailjs.send(
       EMAILJS_SERVICE_ID,
       EMAILJS_TEMPLATE_ID,
-      templateParams
+      adminTemplateParams
     );
 
-    console.log('EmailJS SUCCESS:', response);
-    return { success: true, message: "Email sent successfully" };
+    console.log('Admin email sent successfully:', adminResponse);
+
+    // If user provided an email, send them a copy too
+    if (userHasEmail) {
+      try {
+        // Create user template params - same as admin but with user's email
+        const userTemplateParams = {
+          ...adminTemplateParams,
+          to_email: result.email,
+          subject: `Your Design Test Results`
+        };
+
+        // Send email to user
+        const userResponse = await emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          userTemplateParams
+        );
+
+        console.log('User email sent successfully:', userResponse);
+        return {
+          success: true,
+          message: "Emails sent successfully to admin and user"
+        };
+      } catch (userEmailError) {
+        console.error('Error sending email to user:', userEmailError);
+        // Still return success since admin email was sent
+        return {
+          success: true,
+          message: "Email sent to admin only. Failed to send to user: " +
+                  (userEmailError instanceof Error ? userEmailError.message : String(userEmailError))
+        };
+      }
+    }
+
+    return { success: true, message: "Email sent successfully to admin" };
   } catch (error) {
     console.error('EmailJS ERROR:', error);
 
