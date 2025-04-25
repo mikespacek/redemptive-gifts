@@ -69,13 +69,15 @@ export async function sendResultToGoogleSheet(
     // Target the hidden iframe to avoid page navigation
     form.target = 'hidden_iframe';
 
-    // Add a single data field with JSON to the form
+    // Add each field to the form individually
     // This is more compatible with the Google Apps Script
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'data';
-    input.value = JSON.stringify(formattedData);
-    form.appendChild(input);
+    Object.entries(formattedData).forEach(([key, value]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = String(value);
+      form.appendChild(input);
+    });
 
     // Log the data being sent
     console.log('Sending data to Google Sheets:', formattedData);
