@@ -277,65 +277,10 @@ export default function StaticTestContent() {
             // Continue with the test - don't block the user from seeing results
           }
 
-          // Send email to admin using EmailJS
-          console.log('Sending email notification to admin using EmailJS...');
-          try {
-            const emailResult = await sendResultsEmailJS(results);
-            console.log('EmailJS result:', emailResult);
-
-            if (!emailResult.success) {
-              console.error('EmailJS failed:', emailResult.message);
-            }
-          } catch (emailError) {
-            console.error('Error sending email with EmailJS:', emailError);
-            // Continue with the test - don't block the user from seeing results
-          }
-
-          // Try multiple email methods to ensure the user gets their results
-          if (results.email && results.email.includes('@')) {
-            // Method 1: Open a mailto link for the user
-            console.log('Opening mailto link for user...');
-            try {
-              // This will open the user's email client with a pre-filled email
-              const mailtoResult = openMailtoEmail(results);
-              console.log('Mailto result:', mailtoResult);
-
-              if (!mailtoResult.success) {
-                console.error('Mailto failed:', mailtoResult.message);
-              }
-            } catch (mailtoError) {
-              console.error('Error opening mailto:', mailtoError);
-              // Continue with other methods
-            }
-
-            // Method 2: SMTP.js (backup)
-            console.log('Sending SMTP.js email to user...');
-            try {
-              const smtpJsResult = await sendSmtpJsEmail(results);
-              console.log('SMTP.js result:', smtpJsResult);
-
-              if (!smtpJsResult.success) {
-                console.error('SMTP.js failed:', smtpJsResult.message);
-              }
-            } catch (smtpJsError) {
-              console.error('Error sending SMTP.js email:', smtpJsError);
-              // Continue with other methods
-            }
-
-            // Method 3: Direct EmailJS API (backup)
-            console.log('Sending direct EmailJS to user...');
-            try {
-              const directEmailJSResult = await sendDirectEmailJS(results);
-              console.log('Direct EmailJS result:', directEmailJSResult);
-
-              if (!directEmailJSResult.success) {
-                console.error('Direct EmailJS failed:', directEmailJSResult.message);
-              }
-            } catch (directEmailJSError) {
-              console.error('Error sending direct EmailJS:', directEmailJSError);
-              // Continue with other methods
-            }
-          }
+          // We'll send emails from the results page instead
+          console.log('Emails will be sent from the results page');
+          // This ensures the admin email is sent when the results page loads
+          // and the user can request their own email with the button
         } else {
           console.log('Not sending to Google Sheet or email - missing user info');
         }
