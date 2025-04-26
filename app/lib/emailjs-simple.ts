@@ -7,8 +7,8 @@ import { giftDescriptions } from './gift-descriptions';
 // EmailJS configuration - use hardcoded values as fallback to ensure it works
 const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_4tgz7bd';
 const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_mzzf8vc';
-// Use a completely different template ID for user emails
-const EMAILJS_USER_TEMPLATE_ID = 'template_ixvxnxj'; // Hardcoded to ensure it works
+// Use the same template ID for user emails since we know it exists
+const EMAILJS_USER_TEMPLATE_ID = 'template_mzzf8vc'; // Use the same template that we know works
 const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'vaFeAuSrJZXHN4OTu';
 const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'mikespacek@unionhouston.com';
 
@@ -186,15 +186,16 @@ export async function sendResultsEmailJS(
       try {
         console.log('User has email, sending user email to:', result.email);
 
-        // Create a completely separate template for user emails with different parameter names
-        // This ensures no confusion with the admin template
+        // Use the same parameter structure as the admin template but change the recipient
         const userTemplateParams = {
-          // Basic info - ONLY include what's needed for the user email
+          // Basic info - use the same structure as admin template but with user as recipient
+          to_email: result.email, // This is the key change - send to user's email
+          from_name: 'Your Design',
+          subject: `Your Design Test Results`,
           user_name: userName,
           user_email: result.email,
-          from_name: 'Your Design',
-          reply_to: ADMIN_EMAIL,
           test_date: testDate,
+          app_url: process.env.NEXT_PUBLIC_APP_URL || 'https://your-design.unionhouston.com',
 
           // Gift results
           dominant_gift: capitalizedDominantGift,
@@ -202,13 +203,13 @@ export async function sendResultsEmailJS(
           all_scores: formattedScores,
 
           // Column scores for the table
-          score_t: result.columnScores?.T || 0,
-          score_g: result.columnScores?.G || 0,
-          score_r: result.columnScores?.R || 0,
-          score_e: result.columnScores?.E || 0,
-          score_m: result.columnScores?.M || 0,
-          score_p: result.columnScores?.P || 0,
-          score_s: result.columnScores?.S || 0,
+          column_t: result.columnScores?.T || 0,
+          column_g: result.columnScores?.G || 0,
+          column_r: result.columnScores?.R || 0,
+          column_e: result.columnScores?.E || 0,
+          column_m: result.columnScores?.M || 0,
+          column_p: result.columnScores?.P || 0,
+          column_s: result.columnScores?.S || 0,
 
           // Gift profile details
           principle: giftDescriptions[dominantGiftType].principle || 'Not available',
@@ -220,12 +221,21 @@ export async function sendResultsEmailJS(
           battlefield: giftDescriptions[dominantGiftType].battlefield || 'Not available',
           legitimacy_lie: giftDescriptions[dominantGiftType].legitimacyLie || 'Not available',
           biblical_example: giftDescriptions[dominantGiftType].biblicalExample || 'Not available',
-          birthright: giftDescriptions[dominantGiftType].birthright || 'Not available'
+          birthright: giftDescriptions[dominantGiftType].birthright || 'Not available',
+
+          // Legacy message field for compatibility
+          message: `
+            Dominant Gift: ${capitalizedDominantGift}
+            Secondary Gift: ${capitalizedSecondaryGift}
+
+            All Scores:
+            ${formattedScores}
+          `
         };
 
         console.log('Sending user email with params:', {
-          user_email: userTemplateParams.user_email,
-          user_name: userTemplateParams.user_name
+          to_email: userTemplateParams.to_email,
+          subject: userTemplateParams.subject
         });
 
         // Use a different template ID for user emails
