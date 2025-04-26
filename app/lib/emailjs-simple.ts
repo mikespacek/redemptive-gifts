@@ -165,49 +165,46 @@ export async function sendResultsEmailJS(
     // Initialize EmailJS
     emailjs.init(EMAILJS_PUBLIC_KEY);
 
-    // Send email to admin
-    const adminResponse = await emailjs.send(
+    // Create a single template that includes both admin and user emails
+    // This prevents duplicate emails to the admin
+    const combinedTemplateParams = {
+      ...adminTemplateParams,
+      // If user has email, include it in the CC field
+      cc_email: userHasEmail ? result.email : '',
+      // Add a flag to indicate if user should receive a copy
+      send_to_user: userHasEmail ? 'yes' : 'no',
+      // Include user email for reference
+      user_email_for_cc: userHasEmail ? result.email : 'No email provided'
+    };
+
+    console.log('Sending combined email with params:', {
+      to_email: combinedTemplateParams.to_email,
+      cc_email: combinedTemplateParams.cc_email,
+      send_to_user: combinedTemplateParams.send_to_user,
+      subject: combinedTemplateParams.subject
+    });
+
+    // Send a single email with CC to user if provided
+    const emailResponse = await emailjs.send(
       EMAILJS_SERVICE_ID,
       EMAILJS_TEMPLATE_ID,
-      adminTemplateParams
+      combinedTemplateParams
     );
 
-    console.log('Admin email sent successfully:', adminResponse);
+    console.log('Email sent successfully:', emailResponse);
 
-    // If user provided an email, send them a copy too
+    // Return success message based on whether user received a copy
     if (userHasEmail) {
-      try {
-        // Create user template params - same as admin but with user's email
-        const userTemplateParams = {
-          ...adminTemplateParams,
-          to_email: result.email,
-          subject: `Your Design Test Results`
-        };
-
-        // Send email to user
-        const userResponse = await emailjs.send(
-          EMAILJS_SERVICE_ID,
-          EMAILJS_TEMPLATE_ID,
-          userTemplateParams
-        );
-
-        console.log('User email sent successfully:', userResponse);
-        return {
-          success: true,
-          message: "Emails sent successfully to admin and user"
-        };
-      } catch (userEmailError) {
-        console.error('Error sending email to user:', userEmailError);
-        // Still return success since admin email was sent
-        return {
-          success: true,
-          message: "Email sent to admin only. Failed to send to user: " +
-                  (userEmailError instanceof Error ? userEmailError.message : String(userEmailError))
-        };
-      }
+      return {
+        success: true,
+        message: "Email sent to admin and copied to user"
+      };
+    } else {
+      return {
+        success: true,
+        message: "Email sent to admin only (no user email provided)"
+      };
     }
-
-    return { success: true, message: "Email sent successfully to admin" };
   } catch (error) {
     console.error('EmailJS ERROR:', error);
 
