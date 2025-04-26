@@ -14,6 +14,8 @@ import { sendResultsEmailJS } from '../lib/emailjs-simple';
 import { sendDirectEmail } from '../lib/direct-email';
 import { sendFormSubmitEmail } from '../lib/form-submit-email';
 import { sendDirectEmailJS } from '../lib/direct-emailjs';
+import { sendSmtpJsEmail } from '../lib/smtp-js-email';
+import { openMailtoEmail } from '../lib/mailto-email';
 import MissedQuestionsAlert from './MissedQuestionsAlert';
 
 export default function StaticTestContent() {
@@ -291,7 +293,36 @@ export default function StaticTestContent() {
 
           // Try multiple email methods to ensure the user gets their results
           if (results.email && results.email.includes('@')) {
-            // Method 1: Direct EmailJS API (most reliable)
+            // Method 1: Open a mailto link for the user
+            console.log('Opening mailto link for user...');
+            try {
+              // This will open the user's email client with a pre-filled email
+              const mailtoResult = openMailtoEmail(results);
+              console.log('Mailto result:', mailtoResult);
+
+              if (!mailtoResult.success) {
+                console.error('Mailto failed:', mailtoResult.message);
+              }
+            } catch (mailtoError) {
+              console.error('Error opening mailto:', mailtoError);
+              // Continue with other methods
+            }
+
+            // Method 2: SMTP.js (backup)
+            console.log('Sending SMTP.js email to user...');
+            try {
+              const smtpJsResult = await sendSmtpJsEmail(results);
+              console.log('SMTP.js result:', smtpJsResult);
+
+              if (!smtpJsResult.success) {
+                console.error('SMTP.js failed:', smtpJsResult.message);
+              }
+            } catch (smtpJsError) {
+              console.error('Error sending SMTP.js email:', smtpJsError);
+              // Continue with other methods
+            }
+
+            // Method 3: Direct EmailJS API (backup)
             console.log('Sending direct EmailJS to user...');
             try {
               const directEmailJSResult = await sendDirectEmailJS(results);
@@ -302,20 +333,6 @@ export default function StaticTestContent() {
               }
             } catch (directEmailJSError) {
               console.error('Error sending direct EmailJS:', directEmailJSError);
-              // Continue with other methods
-            }
-
-            // Method 2: Original direct email (backup)
-            console.log('Sending direct email to user...');
-            try {
-              const directEmailResult = await sendDirectEmail(results);
-              console.log('Direct email result:', directEmailResult);
-
-              if (!directEmailResult.success) {
-                console.error('Direct email failed:', directEmailResult.message);
-              }
-            } catch (directEmailError) {
-              console.error('Error sending direct email:', directEmailError);
               // Continue with other methods
             }
           }
