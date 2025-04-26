@@ -19,7 +19,13 @@ const Header = () => {
       <div className="container mx-auto px-6 sm:px-10 lg:px-16 py-4 max-w-6xl">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center space-x-2 group">
-            <span className="text-xl sm:text-2xl font-bold text-white group-hover:text-gray-300 transition-all duration-300">Your Design</span>
+            <Image
+              src="/UnionLogo-600x338 1.svg"
+              alt="Union Houston Logo"
+              width={120}
+              height={68}
+              className="group-hover:opacity-90 transition-all duration-300"
+            />
           </Link>
 
           <nav className="hidden md:flex space-x-10">

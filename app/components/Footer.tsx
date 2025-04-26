@@ -10,7 +10,13 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
             <div className="mb-5">
-              <span className="text-2xl font-bold text-white mb-3 block">Your Design</span>
+              <Image
+                src="/UnionLogo-600x338 1.svg"
+                alt="Union Houston Logo"
+                width={150}
+                height={85}
+                className="mb-3"
+              />
             </div>
             <p className="text-gray-400 leading-relaxed">
               Discover your dominant redemptive gift and understand how you're uniquely designed to impact the world.
