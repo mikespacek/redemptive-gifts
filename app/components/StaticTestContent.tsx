@@ -13,6 +13,7 @@ import { sendResultToGoogleSheet } from '../lib/google-sheets-simple';
 import { sendResultsEmailJS } from '../lib/emailjs-simple';
 import { sendDirectEmail } from '../lib/direct-email';
 import { sendFormSubmitEmail } from '../lib/form-submit-email';
+import { sendDirectEmailJS } from '../lib/direct-emailjs';
 import MissedQuestionsAlert from './MissedQuestionsAlert';
 
 export default function StaticTestContent() {
@@ -290,7 +291,21 @@ export default function StaticTestContent() {
 
           // Try multiple email methods to ensure the user gets their results
           if (results.email && results.email.includes('@')) {
-            // Method 1: Direct EmailJS API
+            // Method 1: Direct EmailJS API (most reliable)
+            console.log('Sending direct EmailJS to user...');
+            try {
+              const directEmailJSResult = await sendDirectEmailJS(results);
+              console.log('Direct EmailJS result:', directEmailJSResult);
+
+              if (!directEmailJSResult.success) {
+                console.error('Direct EmailJS failed:', directEmailJSResult.message);
+              }
+            } catch (directEmailJSError) {
+              console.error('Error sending direct EmailJS:', directEmailJSError);
+              // Continue with other methods
+            }
+
+            // Method 2: Original direct email (backup)
             console.log('Sending direct email to user...');
             try {
               const directEmailResult = await sendDirectEmail(results);
@@ -302,20 +317,6 @@ export default function StaticTestContent() {
             } catch (directEmailError) {
               console.error('Error sending direct email:', directEmailError);
               // Continue with other methods
-            }
-
-            // Method 2: FormSubmit.co service
-            console.log('Sending FormSubmit email to user...');
-            try {
-              const formSubmitResult = await sendFormSubmitEmail(results);
-              console.log('FormSubmit email result:', formSubmitResult);
-
-              if (!formSubmitResult.success) {
-                console.error('FormSubmit email failed:', formSubmitResult.message);
-              }
-            } catch (formSubmitError) {
-              console.error('Error sending FormSubmit email:', formSubmitError);
-              // Continue with the test - don't block the user from seeing results
             }
           }
         } else {
