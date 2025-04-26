@@ -19,7 +19,7 @@ const Footer = () => {
               />
             </div>
             <p className="text-gray-400 leading-relaxed">
-              Discover your dominant redemptive gift and understand how you're uniquely designed to impact the world.
+              Discover your redemptive gifts and understand how you're uniquely designed to impact the world.
             </p>
           </div>
 
