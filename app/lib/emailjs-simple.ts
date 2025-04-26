@@ -7,7 +7,8 @@ import { giftDescriptions } from './gift-descriptions';
 // EmailJS configuration - use hardcoded values as fallback to ensure it works
 const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_4tgz7bd';
 const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_mzzf8vc';
-const EMAILJS_USER_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_USER_TEMPLATE_ID || 'template_mzzf8vc';
+// Use a completely different template ID for user emails
+const EMAILJS_USER_TEMPLATE_ID = 'template_ixvxnxj'; // Hardcoded to ensure it works
 const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'vaFeAuSrJZXHN4OTu';
 const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'mikespacek@unionhouston.com';
 
@@ -185,14 +186,14 @@ export async function sendResultsEmailJS(
       try {
         console.log('User has email, sending user email to:', result.email);
 
-        // Create a completely separate template for user emails
+        // Create a completely separate template for user emails with different parameter names
+        // This ensures no confusion with the admin template
         const userTemplateParams = {
           // Basic info - ONLY include what's needed for the user email
-          to_name: userName,
-          to_email: result.email,
+          user_name: userName,
+          user_email: result.email,
           from_name: 'Your Design',
           reply_to: ADMIN_EMAIL,
-          subject: `Your Design Test Results`,
           test_date: testDate,
 
           // Gift results
@@ -201,13 +202,13 @@ export async function sendResultsEmailJS(
           all_scores: formattedScores,
 
           // Column scores for the table
-          column_t: result.columnScores?.T || 0,
-          column_g: result.columnScores?.G || 0,
-          column_r: result.columnScores?.R || 0,
-          column_e: result.columnScores?.E || 0,
-          column_m: result.columnScores?.M || 0,
-          column_p: result.columnScores?.P || 0,
-          column_s: result.columnScores?.S || 0,
+          score_t: result.columnScores?.T || 0,
+          score_g: result.columnScores?.G || 0,
+          score_r: result.columnScores?.R || 0,
+          score_e: result.columnScores?.E || 0,
+          score_m: result.columnScores?.M || 0,
+          score_p: result.columnScores?.P || 0,
+          score_s: result.columnScores?.S || 0,
 
           // Gift profile details
           principle: giftDescriptions[dominantGiftType].principle || 'Not available',
@@ -223,8 +224,8 @@ export async function sendResultsEmailJS(
         };
 
         console.log('Sending user email with params:', {
-          to_email: userTemplateParams.to_email,
-          subject: userTemplateParams.subject
+          user_email: userTemplateParams.user_email,
+          user_name: userTemplateParams.user_name
         });
 
         // Use a different template ID for user emails
