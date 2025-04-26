@@ -277,10 +277,22 @@ export default function StaticTestContent() {
             // Continue with the test - don't block the user from seeing results
           }
 
-          // We'll send emails from the results page instead
-          console.log('Emails will be sent from the results page');
-          // This ensures the admin email is sent when the results page loads
-          // and the user can request their own email with the button
+          // Send email to admin using EmailJS
+          console.log('Sending email notification to admin using EmailJS...');
+          try {
+            const emailResult = await sendResultsEmailJS(results);
+            console.log('Admin EmailJS result:', emailResult);
+
+            if (!emailResult.success) {
+              console.error('Admin EmailJS failed:', emailResult.message);
+            }
+          } catch (emailError) {
+            console.error('Error sending email with EmailJS:', emailError);
+            // Continue with the test - don't block the user from seeing results
+          }
+
+          // User will request their own email from the results page
+          console.log('User can request their own email from the results page');
         } else {
           console.log('Not sending to Google Sheet or email - missing user info');
         }

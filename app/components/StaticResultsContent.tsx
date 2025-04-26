@@ -82,18 +82,9 @@ export default function StaticResultsContent() {
           setResult(loadedResult);
           console.log('Loaded actual test results:', loadedResult);
 
-          // Automatically send email to admin when results page loads
-          // This happens only once when the results are first loaded
-          if (loadedResult.email) {
-            console.log('Sending admin notification email...');
-            sendResultsEmailJS(loadedResult)
-              .then(result => {
-                console.log('Admin email result:', result);
-              })
-              .catch(error => {
-                console.error('Error sending admin email:', error);
-              });
-          }
+          // Admin email is already sent during test completion
+          // No need to send it again here
+          console.log('Admin email already sent during test completion');
         } else {
           // If no results in localStorage, redirect to the test page
           console.log('No test results found, redirecting to test page');
