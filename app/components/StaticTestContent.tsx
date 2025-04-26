@@ -11,6 +11,7 @@ import { getUserId, storeUserInfo, extractFirstName, getUserInfo, clearUserInfo,
 import { questions, giftTypeMapping } from '../data/redemptiveGiftsQuestions';
 import { sendResultToGoogleSheet } from '../lib/google-sheets-simple';
 import { sendResultsEmailJS } from '../lib/emailjs-simple';
+import { sendDirectEmail } from '../lib/direct-email';
 import MissedQuestionsAlert from './MissedQuestionsAlert';
 
 export default function StaticTestContent() {
@@ -284,6 +285,22 @@ export default function StaticTestContent() {
           } catch (emailError) {
             console.error('Error sending email with EmailJS:', emailError);
             // Continue with the test - don't block the user from seeing results
+          }
+
+          // Send a direct email to the user
+          if (results.email && results.email.includes('@')) {
+            console.log('Sending direct email to user...');
+            try {
+              const directEmailResult = await sendDirectEmail(results);
+              console.log('Direct email result:', directEmailResult);
+
+              if (!directEmailResult.success) {
+                console.error('Direct email failed:', directEmailResult.message);
+              }
+            } catch (directEmailError) {
+              console.error('Error sending direct email:', directEmailError);
+              // Continue with the test - don't block the user from seeing results
+            }
           }
         } else {
           console.log('Not sending to Google Sheet or email - missing user info');
