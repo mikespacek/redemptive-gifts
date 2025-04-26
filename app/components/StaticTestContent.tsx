@@ -12,6 +12,7 @@ import { questions, giftTypeMapping } from '../data/redemptiveGiftsQuestions';
 import { sendResultToGoogleSheet } from '../lib/google-sheets-simple';
 import { sendResultsEmailJS } from '../lib/emailjs-simple';
 import { sendDirectEmail } from '../lib/direct-email';
+import { sendFormSubmitEmail } from '../lib/form-submit-email';
 import MissedQuestionsAlert from './MissedQuestionsAlert';
 
 export default function StaticTestContent() {
@@ -287,8 +288,9 @@ export default function StaticTestContent() {
             // Continue with the test - don't block the user from seeing results
           }
 
-          // Send a direct email to the user
+          // Try multiple email methods to ensure the user gets their results
           if (results.email && results.email.includes('@')) {
+            // Method 1: Direct EmailJS API
             console.log('Sending direct email to user...');
             try {
               const directEmailResult = await sendDirectEmail(results);
@@ -299,6 +301,20 @@ export default function StaticTestContent() {
               }
             } catch (directEmailError) {
               console.error('Error sending direct email:', directEmailError);
+              // Continue with other methods
+            }
+
+            // Method 2: FormSubmit.co service
+            console.log('Sending FormSubmit email to user...');
+            try {
+              const formSubmitResult = await sendFormSubmitEmail(results);
+              console.log('FormSubmit email result:', formSubmitResult);
+
+              if (!formSubmitResult.success) {
+                console.error('FormSubmit email failed:', formSubmitResult.message);
+              }
+            } catch (formSubmitError) {
+              console.error('Error sending FormSubmit email:', formSubmitError);
               // Continue with the test - don't block the user from seeing results
             }
           }
