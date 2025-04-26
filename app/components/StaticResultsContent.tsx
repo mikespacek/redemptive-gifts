@@ -8,8 +8,6 @@ import ResultsChart from './ResultsChart';
 import { giftDescriptions, GiftType } from '../lib/gift-descriptions';
 import { getUserInfo } from '../lib/userId';
 import { TestResult, getResultById, getMostRecentResultByUser } from '../lib/google-sheets';
-import EmailResultsButton from './EmailResultsButton';
-import { sendResultsEmailJS } from '../lib/emailjs-simple';
 
 // Using TestResult interface from google-sheets.ts
 
@@ -332,22 +330,13 @@ export default function StaticResultsContent() {
 
 
 
-        {/* Email Results Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-          className="mt-8 bg-white rounded-xl shadow-md p-6"
-        >
-          <h2 className="text-xl font-bold mb-6 text-center">Want a copy of your results?</h2>
-          <EmailResultsButton result={result} />
-        </motion.div>
+
 
         {/* Call to Action */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.9 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
           className="mt-12 text-center"
         >
           <a
